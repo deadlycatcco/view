@@ -3,7 +3,7 @@ package com.example.myjavafxapp;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 public class CheckoutModel {
-    private String Gif_url = "D:\\навчання\\3 курс\\view\\view2\\view\\src\\main\\resources\\Images\\check-it-out.png";
+    private String Gif_url = "D:\\MyJavaFXApp\\src\\main\\resources\\Images\\check-it-out.png";
     private Image gifImage;
     private ImageView gifImageView;
 

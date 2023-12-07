@@ -14,6 +14,11 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.Thread.sleep;
+
 public class HelloApplication extends Application {
 
     private static final String IMAGE_URL = "https://images.squarespace-cdn.com/content/v1/551a19f8e4b0e8322a93850a/1566776697516-A69UYWW58V0871IQXG9C/Title_Image.png";
@@ -26,7 +31,7 @@ public class HelloApplication extends Application {
     private double cellHeight = 70; // Adjust the size of each cell
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws InterruptedException {
         primaryStage.setTitle("BackgroundGridExample");
 
         Image backgroundImage = new Image(IMAGE_URL);
@@ -74,17 +79,113 @@ public class HelloApplication extends Application {
         baseModel.setPositionY(5);
 
         cell.getChildren().add(baseModel.getGifImageView());
-        System.out.println(isCellFree(gridPane, 2,2));
-        //if (isCellFree(gridPane, 2,2)){
-           // moveBaseModel(gridPane,baseModel, 2,2);
-       // } else {
-           // moveBaseModel(gridPane,baseModel, 3,3);
-       // }
+
+
+//Каси
+        int checkoutsAmt = 7;
+        List<CheckoutModel> checkoutModels = new ArrayList<>();
+
+        for(int i = 1; i <= checkoutsAmt; i++){
+            CheckoutModel checkoutModel = new CheckoutModel();
+            checkoutModel.setPositionX(0);
+            checkoutModel.setPositionY(i);
+            checkoutModels.add(checkoutModel);
+            Pane checkoutCell = getCell(gridPane, 0,i);
+            double cellCheckoutWidth = checkoutCell.getMinWidth();
+            double cellCheckoutHeight = checkoutCell.getMinHeight();
+            checkoutModel.getGifImageView().setFitWidth(cellCheckoutWidth * 0.95); // Adjust the factor based on your preference
+            checkoutModel.getGifImageView().setFitHeight(cellCheckoutHeight * 0.95);
+
+            checkoutCell.getChildren().add(checkoutModel.getGifImageView());
+        }
+
+        int AmountOfCustomers = 3;
+        int tempAmount = AmountOfCustomers;
+        int defaultRow = 6, defaultCol = 4;
+        List<BaseModel> baseModels = new ArrayList<>();
+        while(tempAmount != 0){
+
+            //Розміщую кастомера на дефолтну клітинку
+            BaseModel baseModelTemp = new BaseModel();
+            Pane customerCell1 = getCell(gridPane, defaultRow,defaultCol);
+            baseModelTemp.getGifImageView().setFitWidth(cellWidth * 0.95); // Adjust the factor based on your preference
+            baseModelTemp.getGifImageView().setFitHeight(cellHeight * 0.95);
+            baseModelTemp.setPositionX(defaultRow);
+            baseModelTemp.setPositionY(defaultCol);
+            customerCell1.getChildren().add(baseModelTemp.getGifImageView());
+            baseModels.add(baseModelTemp);
+
+            int i = 0;
+            int j = 1;
+            Boolean ok = false;
+            // Тепер перебираю каси
+            while(true)
+            {
+                if(isCellFree(gridPane, checkoutModels.get(0).getPositionX()+j,
+                        checkoutModels.get(0).getPositionY())){
+                    moveBaseModelTo(gridPane,baseModelTemp, checkoutModels.get(0).getPositionX()+j,
+                            checkoutModels.get(0).getPositionY());
+                    ok = true;
+                }
+                else {
+                    j++;
+                }
+                i++;
+                if(ok){
+                    break;
+                }
+
+            }
+
+
+            tempAmount--;
+            break;
+        }
+
+
+
+
+////це щоб в залежності від координат челік рухався кудись, і якщо клітинка зайнята
+//// щоб він ставав на клітинку нижче для кастомерів
+//        int targetRow = 1;
+//        int targetCol = 1;
+//        cell.getChildren().add(baseModel.getGifImageView());
+//        System.out.println(isCellFree(gridPane, targetRow,targetCol));
+//
+//        if (isCellFree(gridPane, targetRow,targetCol)){
+//            moveBaseModelTo(gridPane,baseModel, targetRow,targetCol);
+//        } else {
+//            moveBaseModelTo(gridPane,baseModel, targetRow+1,targetCol);
+//        }
+//
+
+
+
         //moveGifToRight(cell, 0, 0);
-        moveBaseModel(gridPane, baseModel);
-        moveBaseModel(gridPane, baseModel);
-        moveBaseModel(gridPane, baseModel);
-        moveBaseModel(gridPane, baseModel);
+
+//це щоб генерувати куків один біля одного в залежності від кількості куків, але це все дуже приблизно
+
+        //        int amountOfCook = 6;
+        //        List<BaseModel> baseModels = new ArrayList<>();
+        //        for(int i = 0; i < amountOfCook; i++){
+        //            baseModels.add(new BaseModel());
+        //        }
+        //        int c = 1;
+        //        for (BaseModel baseModelTemp: baseModels) {
+        //            Pane cellll = getCell(gridPane, 0,c);
+        //            baseModelTemp.setPositionX(0);
+        //            baseModelTemp.setPositionY(c);
+        //            baseModelTemp.getGifImageView().setFitWidth(cellWidth1 * 0.95);
+        //            baseModelTemp.getGifImageView().setFitHeight(cellHeight1 * 0.95);
+        //            cellll.getChildren().add(baseModelTemp.getGifImageView());
+        //            c++;
+        //        }
+
+
+//        moveBaseModel(gridPane, baseModel);
+//        moveBaseModel(gridPane, baseModel);
+//        moveBaseModel(gridPane, baseModel);
+//        moveBaseModel(gridPane, baseModel);
 
 
 
@@ -141,15 +242,26 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void moveBaseModelTo(GridPane gridPane, BaseModel baseModel, int targetRow, int targetCol) {
+   private void moveBaseModelTo(GridPane gridPane, BaseModel baseModel, int targetRow, int targetCol) {
         int currentX = baseModel.getPositionX();
         int currentY = baseModel.getPositionY();
 
         double cellWidth = this.cellWidth;
         double cellHeight = this.cellHeight;
 
-        double newTranslateX = (targetRow - currentX) * cellWidth;
-        double newTranslateY = (targetCol - currentY) * cellHeight;
+        double newTranslateX;
+        double newTranslateY;
+        if(currentX > targetRow)  {
+             newTranslateX = (targetCol - currentY) * cellWidth;
+        }else {
+            newTranslateX = (currentY - targetCol) * -cellWidth;
+        }
+        if(currentY < targetCol) {
+            newTranslateY = (targetRow - currentX) * cellHeight;
+        }else {
+            newTranslateY = (currentX - targetRow) *-cellHeight;
+        }
+
 
         TranslateTransition transition = new TranslateTransition(Duration.seconds(3), baseModel.getGifImageView());
         transition.setToX(newTranslateX);
@@ -159,6 +271,11 @@ public class HelloApplication extends Application {
         baseModel.setPositionX(targetRow);
         baseModel.setPositionY(targetCol);
 
+//       Pane oldCell = getCell(gridPane, currentX, currentY);
+//       oldCell.getChildren().remove(baseModel.getGifImageView());
+//
+//       Pane newCell = getCell(gridPane, targetRow, targetCol);
+//       newCell.getChildren().add(baseModel.getGifImageView());
         transition.setOnFinished(event -> {
             Pane oldCell = getCell(gridPane, currentX, currentY);
             oldCell.getChildren().remove(baseModel.getGifImageView());
@@ -168,7 +285,9 @@ public class HelloApplication extends Application {
 
             baseModel.getGifImageView().setTranslateX(0);
             baseModel.getGifImageView().setTranslateY(0);
+
         });
+
     }
 //    public void moveBaseModel(GridPane gridPane, BaseModel baseModel, int targetRow, int targetCol) {
 //        // Отримуємо поточні координати клітинки

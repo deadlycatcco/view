@@ -3,12 +3,8 @@ package com.example.myjavafxapp;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -16,25 +12,30 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Thread.sleep;
 
 public class HelloApplication extends Application {
-
     private static final String IMAGE_URL = "https://images.squarespace-cdn.com/content/v1/551a19f8e4b0e8322a93850a/1566776697516-A69UYWW58V0871IQXG9C/Title_Image.png";
     private static final String GIF_URL = "https://img.itch.zone/aW1nLzMzMzY4OTguZ2lm/original/0Ut41Y.gif";
     private static final int GRID_ROWS = 14;
     private static final int GRID_COLUMNS = 20;
+    private final Object monitor = new Object();
 
     private GridPane gridPane;
+    private MovingHandler movingHandler = new MovingHandler(gridPane);
+
     private double cellWidth = 40; // Adjust the size of each cell
     private double cellHeight = 40; // Adjust the size of each cell
 
-    private boolean isThreadRunning = false;
 
     @Override
     public void start(Stage primaryStage) throws InterruptedException {
+
+
         primaryStage.setTitle("BackgroundGridExample");
 
         Image backgroundImage = new Image(IMAGE_URL);
@@ -54,12 +55,12 @@ public class HelloApplication extends Application {
         // Add your cells to the grid here
         for (int row = 0; row < GRID_ROWS; row++) {
             for (int col = 0; col < GRID_COLUMNS; col++) {
-                Pane cell = createCell();
+                Pane cell = movingHandler.createCell();
                 gridPane.add(cell, col, row);
             }
         }
 
-        Pane cell1 = getCell(gridPane, 2,1);
+        Pane cell1 = movingHandler.getCell(gridPane, 2,1);
         BaseModel baseModel1 = new BaseModel();
         // Set the fit width and fit height to be a fraction of the cell size
         double cellWidth1 = cell1.getMinWidth();
@@ -70,7 +71,7 @@ public class HelloApplication extends Application {
         baseModel1.setPositionY(2);
         cell1.getChildren().add(baseModel1.getGifImageView());
 
-        Pane cell = getCell(gridPane, 5,5);
+        Pane cell = movingHandler.getCell(gridPane, 5,5);
 
         BaseModel baseModel = new BaseModel();
         // Set the fit width and fit height to be a fraction of the cell size
@@ -85,6 +86,7 @@ public class HelloApplication extends Application {
 
 
 //Каси
+        int currentCheckout = 3;
         int checkoutsAmt = 5;
         List<CheckoutModel> checkoutModels = new ArrayList<>();
 
@@ -94,7 +96,7 @@ public class HelloApplication extends Application {
             checkoutModel.setPositionX(position);
             checkoutModel.setPositionY(0);
             checkoutModels.add(checkoutModel);
-            Pane checkoutCell = getCell(gridPane, position,0);
+            Pane checkoutCell = movingHandler.getCell(gridPane, position,0);
             double cellCheckoutWidth = checkoutCell.getMinWidth();
             double cellCheckoutHeight = checkoutCell.getMinHeight();
             checkoutModel.getGifImageView().setFitWidth(cellCheckoutWidth * 0.95); // Adjust the factor based on your preference
@@ -104,118 +106,77 @@ public class HelloApplication extends Application {
             position+= 2;
         }
 
+        //int currentCookingPoint = 3;
+        int cookingPointsAmt = 5;
+        List<CookPoint> cookPoints = new ArrayList<>();
+
+        int positionCP = 2;
+        for(int i = 1; i <= cookingPointsAmt; i++){
+            CookPoint cookingPoint = new CookPoint();
+            cookingPoint.setPositionX(positionCP);
+            cookingPoint.setPositionY(gridPane.getColumnCount()-1);
+            cookPoints.add(cookingPoint);
+            Pane cookPointCell = movingHandler.getCell(gridPane, positionCP,gridPane.getColumnCount()-1);
+            double cellCheckoutWidth = cookPointCell.getMinWidth();
+            double cellCheckoutHeight = cookPointCell.getMinHeight();
+            cookingPoint.getGifImageView().setFitWidth(cellCheckoutWidth * 0.95); // Adjust the factor based on your preference
+            cookingPoint.getGifImageView().setFitHeight(cellCheckoutHeight * 0.95);
+
+            cookPointCell.getChildren().add(cookingPoint.getGifImageView());
+            positionCP+= 2;
+        }
+
 
 //кастомери
         int AmountOfCustomers = 3;
         int tempAmount = AmountOfCustomers;
         int defaultRow = 6, defaultCol = 4;
         List<BaseModel> baseModels = new ArrayList<>();
-        Object lock = new Object();
+        final int finalTempAmount = tempAmount;
+        List<Integer> checkout0List = new ArrayList<>(Collections.nCopies(8, 1));
 
-        while(tempAmount != 0){
+        checkout0List.set(0, 0);
+        while (tempAmount != 0) {
 
             //Розміщую кастомера на дефолтну клітинку
             BaseModel baseModelTemp = new BaseModel();
-            Pane customerCell1 = getCell(gridPane, defaultRow,defaultCol);
+            Pane customerCell1 =movingHandler.getCell(gridPane, defaultRow, defaultCol);
             baseModelTemp.getGifImageView().setFitWidth(cellWidth * 0.95); // Adjust the factor based on your preference
             baseModelTemp.getGifImageView().setFitHeight(cellHeight * 0.95);
             baseModelTemp.setPositionX(defaultRow);
             baseModelTemp.setPositionY(defaultCol);
             customerCell1.getChildren().add(baseModelTemp.getGifImageView());
-
-
-            final int finalTempAmount = tempAmount; // Needs to be final to be accessed in the lambda
-            Thread thread = new Thread(() -> {
-                synchronized (lock) {
-                    System.out.println("Hello, I'm thread for baseModel " + (AmountOfCustomers - finalTempAmount) +
-                            ", thread name: " + Thread.currentThread().getName());
-                    testfunc(checkoutModels, baseModelTemp);
-//                    int i = 0;
-//                    int j = 1;
-//                    Boolean ok = false;
-//                    while (true) {
-//                        if (isCellFree(gridPane, checkoutModels.get(0).getPositionX(),
-//                                checkoutModels.get(0).getPositionY() + j)) {
-//                            int targetRow = checkoutModels.get(0).getPositionX();
-//                            int targetCol = checkoutModels.get(0).getPositionY() + j;
-//
-//                            // Use Platform.runLater() to update UI from background thread
-//                            Platform.runLater(() -> moveBaseModelTo(gridPane, baseModelTemp, targetRow, targetCol));
-//
-//                            ok = true;
-//                            break;  // Exit the loop after moving to a free cell
-//                        } else {
-//                            j++;
-//                        }
-//                        i++;
-//                    }
-                }
-            });
-
-            // Set a name for the thread for better identification
-            thread.setName("BaseModelThread-" + (AmountOfCustomers - tempAmount));
-
-            // Start the thread
-            thread.start();
-
-            try {
-                // Join the thread to wait for it to finish before proceeding with the next iteration
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
             baseModels.add(baseModelTemp);
 
-//
-//            int i = 0;
-//            int j = 1;
-//            Boolean ok = false;
-//  //           Тепер перебираю каси
-//            while(true)
-//            {
-//                if(isCellFree(gridPane, checkoutModels.get(0).getPositionX(),
-//            checkoutModels.get(0).getPositionY()+j)){
-//                     Pane newCell = getCell(gridPane, checkoutModels.get(0).getPositionX(),  checkoutModels.get(0).getPositionY()+j);
-//                     newCell.getChildren().add(new ImageView());
-//                    moveBaseModelTo(gridPane,baseModelTemp, checkoutModels.get(0).getPositionX(),
-//                            checkoutModels.get(0).getPositionY()+j);
-//                    ok = true;
-//                }
-//                else {
-//                    j++;
-//                }
-//                i++;
-//                if(ok){
-//                    break;
-//                }
-//
-//            }
-
-
+            Thread thread1 = new Thread(() -> {
+                synchronized (monitor) {
+                    Boolean ok = false;
+                    int j = 1;
+                    Thread.currentThread().setName("thread1");
+                    System.out.println("Hello, I'm thread for baseModel 1 (" + (AmountOfCustomers - finalTempAmount) +
+                            "), thread name: " + Thread.currentThread().getName());
+                    for (int i = 0; i < checkout0List.size(); ++i) {
+                        if(i == 0) continue;
+                        if(checkout0List.get(i) == 0 ){
+                            j++;
+                        }
+                        else {
+                            checkout0List.set(j, 0);
+                            break;}
+                    }
+                    final int j2 = j;
+                    Platform.runLater(()->movingHandler.moveBaseModelTo(gridPane, baseModelTemp, checkoutModels.get(currentCheckout).getPositionX(),
+                            checkoutModels.get(currentCheckout).getPositionY()+j2));
+                    try {
+                        sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
             tempAmount--;
+            thread1.start();
         }
-
-
-
-
-////це щоб в залежності від координат челік рухався кудись, і якщо клітинка зайнята
-//// щоб він ставав на клітинку нижче для кастомерів
-//        int targetRow = 1;
-//        int targetCol = 1;
-//        cell.getChildren().add(baseModel.getGifImageView());
-//        System.out.println(isCellFree(gridPane, targetRow,targetCol));
-//
-//        if (isCellFree(gridPane, targetRow,targetCol)){
-//            moveBaseModelTo(gridPane,baseModel, targetRow,targetCol);
-//        } else {
-//            moveBaseModelTo(gridPane,baseModel, targetRow+1,targetCol);
-//        }
-//
-
-
-
-        //moveGifToRight(cell, 0, 0);
 
 //це щоб генерувати куків один біля одного в залежності від кількості куків, але це все дуже приблизно
 
@@ -235,15 +196,6 @@ public class HelloApplication extends Application {
         //            c++;
         //        }
 
-
-//        moveBaseModel(gridPane, baseModel);
-//        moveBaseModel(gridPane, baseModel);
-//        moveBaseModel(gridPane, baseModel);
-//        moveBaseModel(gridPane, baseModel);
-
-
-
-
         //VBox vBox = new VBox(stackPane, moveButton);
         BorderPane root = new BorderPane();
         root.setCenter(stackPane);
@@ -255,236 +207,18 @@ public class HelloApplication extends Application {
         primaryStage.show();
     }
 
-    private Pane createCell() {
-        Pane cell = new Pane();
-        cell.setMinSize(cellWidth, cellHeight); // Adjust the size of each cell
-        cell.setStyle("-fx-border-color: white; -fx-border-width: 1;"); // Add border for visualization
-        return cell;
-    }
-
-    private Pane getCell(GridPane gridPane, int row, int col) {
-        for (Node node : gridPane.getChildren()) {
-            if (GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == col) {
-                if (node instanceof Pane) {
-                    return (Pane) node;
-                }
-            }
-        }
-        return null;
-    }
-
-    public boolean isCellFree(GridPane gridPane, int targetRow, int targetCol){
-        Pane cell = getCell(gridPane, targetRow, targetCol);
-        if(!cell.getChildren().isEmpty()){
-                return false;
-        }
-        return true;
-    }
-    public void moveBaseModel(GridPane gridPane, BaseModel baseModel) {
-        int currentX = baseModel.getPositionX();
-        int currentY = baseModel.getPositionY();
-
-        // Search for an available cell around the current position
-        for (int offsetX = -1; offsetX <= 1; offsetX++) {
-            for (int offsetY = -1; offsetY <= 1; offsetY++) {
-                int targetRow = currentX + offsetX;
-                int targetCol = currentY + offsetY;
-
-                if (isCellFree(gridPane, targetRow, targetCol)) {
-                    moveBaseModelTo(gridPane, baseModel, targetRow, targetCol);
-                    return; // Move only once to the first available cell
-                }
-            }
-        }
-
-    }
-
-   private void moveBaseModelTo(GridPane gridPane, BaseModel baseModel, int targetRow, int targetCol) {
-        int currentX = baseModel.getPositionX();
-        int currentY = baseModel.getPositionY();
-
-        double cellWidth = this.cellWidth;
-        double cellHeight = this.cellHeight;
-
-        double newTranslateX;
-        double newTranslateY;
-        if(currentX > targetRow)  {
-             newTranslateX = (targetCol - currentY) * cellWidth;
-        }else {
-            newTranslateX = (currentY - targetCol) * -cellWidth;
-        }
-        if(currentY < targetCol) {
-            newTranslateY = (targetRow - currentX) * cellHeight;
-        }else {
-            newTranslateY = (currentX - targetRow) *-cellHeight;
-        }
-
-
-        TranslateTransition transition = new TranslateTransition(Duration.seconds(3), baseModel.getGifImageView());
-        transition.setToX(newTranslateX);
-        transition.setToY(newTranslateY);
-        transition.play();
-
-        baseModel.setPositionX(targetRow);
-        baseModel.setPositionY(targetCol);
-
-//       Pane oldCell = getCell(gridPane, currentX, currentY);
-//       oldCell.getChildren().remove(baseModel.getGifImageView());
-//
-//       Pane newCell = getCell(gridPane, targetRow, targetCol);
-//       newCell.getChildren().add(baseModel.getGifImageView());
-        transition.setOnFinished(event -> {
-            Pane oldCell = getCell(gridPane, currentX, currentY);
-            oldCell.getChildren().remove(baseModel.getGifImageView());
-
-            Pane newCell = getCell(gridPane, targetRow, targetCol);
-            newCell.getChildren().add(baseModel.getGifImageView());
-
-            baseModel.getGifImageView().setTranslateX(0);
-            baseModel.getGifImageView().setTranslateY(0);
-            Platform.runLater(() -> {
-                System.out.println("Thread " + Thread.currentThread().getName() + " finished moving baseModel to " +
-                        targetRow + ", " + targetCol);
-            });
-        });
-
-    }
-
-
-
-    void testfunc(List<CheckoutModel> checkoutModels, BaseModel baseModelTemp){
-        int i = 0;
-        int j = 1;
-        Boolean ok = false;
-        while (true) {
-            if (isCellFree(gridPane, checkoutModels.get(0).getPositionX(),
-                    checkoutModels.get(0).getPositionY() + j)) {
-                int targetRow = checkoutModels.get(0).getPositionX();
-                int targetCol = checkoutModels.get(0).getPositionY() + j;
-
-                // Use Platform.runLater() to update UI from background thread
-                Platform.runLater(() -> moveBaseModelTo(gridPane, baseModelTemp, targetRow, targetCol));
-
-                ok = true;
-                break;  // Exit the loop after moving to a free cell
-            } else {
-                j++;
-            }
-            i++;
-        }
-    }
-
-//    public void moveBaseModel(GridPane gridPane, BaseModel baseModel, int targetRow, int targetCol) {
-//        // Отримуємо поточні координати клітинки
-//        int currentX = baseModel.getPositionX();
-//        int currentY = baseModel.getPositionY();
-//
-//        // Отримуємо розмір клітинки
-//        double cellWidth = this.cellWidth;
-//        double cellHeight = this.cellHeight;
-//
-//        // Оновлюємо розташування gifImageView в новій клітинці
-//        double newTranslateX;
-//        double newTranslateY;
-//        if (baseModel.getPositionX() > targetRow){
-//             newTranslateX = (baseModel.getPositionX() -targetRow) * -cellWidth;
-//        }else {
-//             newTranslateX = (targetRow - baseModel.getPositionX()) * cellWidth;
-//        }
-//        if (baseModel.getPositionY() > targetCol){
-//             newTranslateY = (baseModel.getPositionY()- targetCol) * -cellHeight;
-//        }else {
-//             newTranslateY = (targetCol - baseModel.getPositionY()) * cellHeight;
-//        }
-////        newTranslateX = -targetRow * cellWidth;
-////        newTranslateY = -targetCol * cellHeight;
-//        // Створюємо TranslateTransition для анімації переміщення
-//         TranslateTransition transition = new TranslateTransition(Duration.seconds(5), baseModel.getGifImageView());
-//        transition.setToX(newTranslateX);
-//        transition.setToY(newTranslateY);
-//        transition.play();
-//
-//        // Змінюємо координати базової моделі
-//        baseModel.setPositionX(targetRow);
-//        baseModel.setPositionY(targetCol);
-//
-//        // Видаляємо gifImageView зі старої клітинки після завершення анімації
-//        transition.setOnFinished(event -> {
-//            Pane oldCell = getCell(gridPane, currentX, currentY);
-//            oldCell.getChildren().remove(baseModel.getGifImageView());
-//
-//            // Додаємо gifImageView до нової клітинки
-//            Pane newCell = getCell(gridPane, targetRow, targetCol);
-//            newCell.getChildren().add(baseModel.getGifImageView());
-//
-//            // Очищаємо трансформації, щоб уникнути зайвих зсувів
-//            baseModel.getGifImageView().setTranslateX(0);
-//            baseModel.getGifImageView().setTranslateY(0);
-//        });
-//    }
-
-//
-//    private void moveGifToRight(Pane sourceCell, int targetRow, int targetCol) {
-//        if (sourceCell.getChildren().size() > 0) {
-//            ImageView gifImageView = (ImageView) sourceCell.getChildren().get(0);
-//
-//            // Create a new TranslateTransition
-//            TranslateTransition transition = new TranslateTransition(new Duration(10000), gifImageView);
-//
-//
-//            // Set the destination coordinates
-//            double targetX = getCell(gridPane, targetRow, targetCol).getLayoutX() + 1 * cellWidth;
-//            double targetY = getCell(gridPane, targetRow, targetCol).getLayoutY() + 2 * cellHeight;
-//
-//            // Set the translation
-//            transition.setToX(targetX);
-//            transition.setToY(targetY);
-//
-//            // Play the transition
-//            transition.play();
-//
-//            // Remove the gif from the source cell
-//            sourceCell.getChildren().remove(gifImageView);
-//
-//            // Add the gif to the target cell
-//            Pane targetCell = getCell(gridPane, targetRow, targetCol);
-//            targetCell.getChildren().add(gifImageView);
-//        }
-//    }
-//
-//    private void moveGif(Pane sourceCell, Pane targetCell) {
-//        if (sourceCell.getChildren().size() > 0) {
-//            ImageView gifImageView = (ImageView) sourceCell.getChildren().get(0);
-//
-//            // Set the initial position of the gif to the top-left corner of the source cell
-//            gifImageView.setLayoutX(0);
-//            gifImageView.setLayoutY(0);
-//
-//            // Create a new TranslateTransition
-//            TranslateTransition transition = new TranslateTransition(new Duration(1000), gifImageView);
-//
-//            // Set the destination position relative to the target cell
-//            transition.setToX(targetCell.getLayoutX() - sourceCell.getLayoutX());
-//            transition.setToY(targetCell.getLayoutY() - sourceCell.getLayoutY());
-//
-//            // Play the transition
-//            transition.play();
-//
-//            // Remove the gif from the source cell after the transition completes
-//            transition.setOnFinished(event -> {
-//                sourceCell.getChildren().remove(gifImageView);
-//
-//                // Add the gif to the target cell
-//                targetCell.getChildren().add(gifImageView);
-//            });
-//        }
-//    }
-//
-//
-
     public static void main(String[] args) {
         launch(args);
     }
-
-
 }
+
+
+
+
+
+/*
+
+    - перебір кас якщо заповнена, якщо всі заповнені то кастомери не генеруються
+    - йде з каси через якийсь час в зону очікування
+    - точки на кухні, рух куків по кухні
+*/

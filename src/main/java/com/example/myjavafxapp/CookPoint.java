@@ -3,23 +3,22 @@ package com.example.myjavafxapp;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class BaseModel {
-    //private String Gif_url = "https://img.itch.zone/aW1nLzMzMzY4OTguZ2lm/original/0Ut41Y.gif";
+public class CookPoint {
 
-    private String Gif_url ="D:\\MyJavaFXApp\\src\\main\\resources\\Images\\customer1.png";
+    private String Gif_url ="D:\\MyJavaFXApp\\src\\main\\resources\\Images\\cookingPoint.png";
     private Image gifImage;
     private ImageView gifImageView;
 
     private int positionX;
     private int positionY;
 
-    public BaseModel(){
+    public CookPoint(){
         this.positionY = 0;
         this.positionX = 0;
         this.gifImage = new Image(Gif_url);
         this.gifImageView = new ImageView(gifImage);
     }
-    public BaseModel(String gif_url){
+    public CookPoint(String gif_url){
         this.Gif_url = gif_url;
     }
 
@@ -54,5 +53,4 @@ public class BaseModel {
     public void setPositionY(int positionY) {
         this.positionY = positionY;
     }
-
 }

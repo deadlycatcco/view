@@ -109,6 +109,51 @@ public class MovingHandler {
 
     }
 
+    public void moveCookModelTo(GridPane gridPane, CookModel cookModel, int targetRow, int targetCol) {
+        int currentX = cookModel.getPositionX();
+        int currentY = cookModel.getPositionY();
+
+        double cellWidth = this.cellWidth;
+        double cellHeight = this.cellHeight;
+
+        double newTranslateX;
+        double newTranslateY;
+        if(currentX > targetRow)  {
+            newTranslateX = (targetCol - currentY) * cellWidth;
+        }else {
+            newTranslateX = (currentY - targetCol) * -cellWidth;
+        }
+        if(currentY < targetCol) {
+            newTranslateY = (targetRow - currentX) * cellHeight;
+        }else {
+            newTranslateY = (currentX - targetRow) *-cellHeight;
+        }
+
+
+        TranslateTransition transition = new TranslateTransition(Duration.seconds(2), cookModel.getGifImageView());
+        transition.setToX(newTranslateX);
+        transition.setToY(newTranslateY);
+        transition.play();
+
+        cookModel.setPositionX(targetRow);
+        cookModel.setPositionY(targetCol);
+
+        transition.setOnFinished(event -> {
+            Pane oldCell = getCell(gridPane, currentX, currentY);
+            oldCell.getChildren().remove(cookModel.getGifImageView());
+
+            Pane newCell = getCell(gridPane, targetRow, targetCol);
+            newCell.getChildren().add(cookModel.getGifImageView());
+
+            cookModel.getGifImageView().setTranslateX(0);
+            cookModel.getGifImageView().setTranslateY(0);
+
+            System.out.println("Thread " + Thread.currentThread().getName() + " finished moving baseModel to " +
+                    targetRow + ", " + targetCol);
+
+        });
+
+    }
 
 
     void testfunc(List<CheckoutModel> checkoutModels, BaseModel baseModelTemp){

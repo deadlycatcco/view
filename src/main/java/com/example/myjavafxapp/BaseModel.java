@@ -6,7 +6,7 @@ import javafx.scene.image.ImageView;
 public class BaseModel {
     //private String Gif_url = "https://img.itch.zone/aW1nLzMzMzY4OTguZ2lm/original/0Ut41Y.gif";
 
-    private String Gif_url ="D:\\MyJavaFXApp\\src\\main\\resources\\Images\\customer1.png";
+    private String Gif_url ="D:\\навчання\\3 курс\\view\\view2\\view\\src\\main\\resources\\Images\\customer1.png";
     private Image gifImage;
     private ImageView gifImageView;
 

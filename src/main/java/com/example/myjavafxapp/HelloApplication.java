@@ -3,6 +3,7 @@ package com.example.myjavafxapp;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -19,8 +20,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static java.lang.Thread.sleep;
 
 public class HelloApplication extends Application {
-    private static final String IMAGE_URL = "https://images.squarespace-cdn.com/content/v1/551a19f8e4b0e8322a93850a/1566776697516-A69UYWW58V0871IQXG9C/Title_Image.png";
-    private static final String GIF_URL = "https://img.itch.zone/aW1nLzMzMzY4OTguZ2lm/original/0Ut41Y.gif";
+    //private static final String IMAGE_URL = "https://images.squarespace-cdn.com/content/v1/551a19f8e4b0e8322a93850a/1566776697516-A69UYWW58V0871IQXG9C/Title_Image.png";
+    //private static final String GIF_URL = "https://img.itch.zone/aW1nLzMzMzY4OTguZ2lm/original/0Ut41Y.gif";
+    private static final String IMAGE_URL = "D:\\MyJavaFXApp\\src\\main\\resources\\Images\\cafe.png";
     private static final int GRID_ROWS = 14;
     private static final int GRID_COLUMNS = 20;
     private final Object monitor = new Object();
@@ -39,10 +41,14 @@ public class HelloApplication extends Application {
         primaryStage.setTitle("BackgroundGridExample");
 
         Image backgroundImage = new Image(IMAGE_URL);
+        BackgroundImage background = new BackgroundImage(backgroundImage,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+
         gridPane = new GridPane();
         gridPane.setHgap(0);
         gridPane.setVgap(0);
-        //gridPane.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
+        gridPane.setBackground(new Background(background)); // Встановлення фону для GridPane
 
         ImageView imageView = new ImageView();
         imageView.setPreserveRatio(true);

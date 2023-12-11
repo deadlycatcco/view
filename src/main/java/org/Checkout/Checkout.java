@@ -2,8 +2,8 @@ package org.Checkout;
 
 import org.Customer.Customer;
 import org.Customer.ICustomerObserver;
-import org.order.Order;
 import org.PizzaRestaurant.Kitchen;
+import org.order.Order;
 
 import java.util.LinkedList;
 import java.util.Queue;

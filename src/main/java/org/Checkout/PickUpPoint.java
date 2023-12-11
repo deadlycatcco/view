@@ -5,9 +5,7 @@ import org.Customer.CustomerList;
 import org.order.Order;
 import org.order.OrderList;
 
-import java.util.ArrayList;
-
-public class PickUpPoint {
+public class PickUpPoint implements Runnable{
     public OrderList orderCompleteList;
     public CustomerList customerWaitingList;
 
@@ -36,9 +34,42 @@ public class PickUpPoint {
     }
 
     public void addCustomerToWaitList(Customer customer){
-        customerWaitingList.addToList(customer);
+        synchronized (customerWaitingList)
+        {
+            customerWaitingList.addToList(customer);
+        }
     }
+    public void addOrderToCompleteList(Order order){
+        synchronized (orderCompleteList)
+        {
+            orderCompleteList.addToList(order);
+        }
+    }
+    public void giveOrderToCustomer()
+    {
+        Order order;
 
+        synchronized (orderCompleteList){
+            while (orderCompleteList.isEmptyOrderQueue()){
+                try {
+                    orderCompleteList.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            order = orderCompleteList.getOrderQueue().get(0);
+            orderCompleteList.removeFromList(order);
+        }
 
+        synchronized (customerWaitingList){
+            customerWaitingList.takeOrderAndLeave(order);
+        }
 
+    }
+    @Override
+    public void run() {
+        while(true){
+            giveOrderToCustomer();
+        }
+    }
 }

@@ -1,41 +1,31 @@
 package org.Simulation;
 
-import javafx.application.Platform;
 import org.Checkout.Checkout;
+import org.Checkout.CheckoutList;
+import org.Checkout.PickUpPoint;
 import org.Cooks.Cook;
 import org.Cooks.CookList;
 import org.Cooks.CookingStrategy.ICookingStrategy;
-import org.Cooks.CookingStrategy.MultipleCookingStrategy;
 import org.Cooks.CookingStrategy.SingleCookingStrategy;
 import org.Cooks.ICook;
 import org.Customer.Customer;
 import org.Customer.CustomerGenerator;
 import org.Customer.CustomerManager;
-import org.Customer.ICustomerObserver;
-
-import org.menu_and_pizza.Menu;
-
-import org.PizzaRestaurant.Kitchen;
-
-import org.PizzaRestaurant.PizzaRestaurant;
-import org.PizzaRestaurant.PizzaRestaurantBuilder;
-import org.PizzaRestaurant.PizzaRestaurantDirector;
+import org.PizzaRestaurant.*;
 import org.menu_and_pizza.AbstractProduct;
-import org.menu_and_pizza.Pizza;
-import org.order.IOrderBoardObserver;
+import org.menu_and_pizza.Menu;
 import org.order.Order;
 import org.order.OrderBoard;
-import org.order.OrderStatus;
+import org.order.generation.MultiplePizzaAndBeverageStrategy;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import static javafx.application.Application.launch;
-
 public class Simulation {
     private PizzaRestaurant pizzaRestaurant;
+    private static final Object lock2 = new Object();
     public PizzaRestaurant init() {
         PizzaRestaurantBuilder builder = new PizzaRestaurantBuilder();
         PizzaRestaurantDirector director = new PizzaRestaurantDirector(builder);
@@ -57,47 +47,29 @@ public class Simulation {
     }
 
     public static void YULIIA_TEST_CODE(){
-        Platform.runLater(() -> {
-            System.out.println("Hello, i`m pizza restaurant");
-
-            Menu menu = new Menu();
-            OrderBoard orderBoard= OrderBoard.getOrderBoard();
-
-            CustomerGenerator customerGenerator = CustomerGenerator.getInstance();
-
-            List<Customer> customers=new ArrayList<>();
-
-            for(int i = 0; i< 5; i++) {
-                Customer customer=customerGenerator.generateCustomer();
-                customers.add(customer);
-                orderBoard.addCustomer(customer);
-            }
-            for(var c: customers){
-                c.getOrder().changeStatus(OrderStatus.NEW);
-            }
-        });
+        /*System.out.println("Hello, i`m pizza restaurant");
 
 //ордербоард сповіщає кастомера щоб ордер готовий
-//        IOrderBoardObserver orderObserver= OrderBoard.getOrderBoard();
-//        ICustomerObserver customer1=new Customer();
-//        ICustomerObserver customer2=new Customer();
-//        customer1.setId(1);
-//        customer2.setId(2);
-//        orderObserver.addCustomer(customer1);
-//        orderObserver.addCustomer(customer2);
-//
-//        //ордери сповіщають ордербоард про зміну свого статусу
-//        Order order1=new Order();
-//        Order order2=new Order();
-//        Order order3=new Order();
-//        order1.setId(1);
-//        order2.setId(2);
-//        order3.setId(3);
-//
-//        order1.changeStatus(OrderStatus.NEW);
-//        order2.changeStatus(OrderStatus.COMPLETED);
-//        order3.changeStatus(OrderStatus.PREPARING);
-//
+        IOrderBoardObserver orderObserver=OrderBoard.getOrderBoard();
+        ICustomerObserver customer1=new Customer();
+        ICustomerObserver customer2=new Customer();
+        customer1.setId(1);
+        customer2.setId(2);
+        orderObserver.addCustomer(customer1);
+        orderObserver.addCustomer(customer2);
+
+        //ордери сповіщають ордербоард про зміну свого статусу
+        Order order1=new Order();
+        Order order2=new Order();
+        Order order3=new Order();
+        order1.setId(1);
+        order2.setId(2);
+        order3.setId(3);
+
+        order1.changeStatus(OrderStatus.NEW);
+        order2.changeStatus(OrderStatus.COMPLETED);
+        order3.changeStatus(OrderStatus.PREPARING);*/
+
 
 
       /*  ICustomerObserver customer1=new Customer();
@@ -128,7 +100,7 @@ public class Simulation {
 //        ch.addToList(checkout1);
 //        ch.addToList(checkout2);
 //        ch.addToList(checkout3);
-
+//
 //        CustomerManager customerManager=new CustomerManager(ch);
 //
 //        for(int i=0;i<5;++i)
@@ -137,7 +109,10 @@ public class Simulation {
 
     }
     static private int i=1;
+
+
     public static void TEST_ASSIGN_ORDER(){
+        Menu menu = new Menu();
 
         Kitchen kitchen=new Kitchen();
 //
@@ -147,22 +122,23 @@ public class Simulation {
         cookList.setCookingStrategy(cookingStrategy);
 
         ICook cook1=new Cook();
-        cook1.setStrategy(new SingleCookingStrategy());
+        //cook1.setStrategy(new SingleCookingStrategy());
         ICook cook2=new Cook();
-       cook2.setStrategy(new SingleCookingStrategy());
+       //cook2.setStrategy(new SingleCookingStrategy());
         ICook cook3=new Cook();
-        cook3.setStrategy(cookingStrategy);
+        //cook3.setStrategy(cookingStrategy);
         cookList.addToList(cook1);
         cookList.addToList(cook2);
 
 
         kitchen.setCookList(cookList);
-        Order order1=new Order();
-        Order order2=new Order();
-        Order order3=new Order();
-        order1.setId(1);
-        order2.setId(2);
-        order3.setId(3);
+        List<AbstractProduct> str1 = new MultiplePizzaAndBeverageStrategy().generate();
+        List<AbstractProduct> str2 = new MultiplePizzaAndBeverageStrategy().generate();
+        List<AbstractProduct> str3 = new MultiplePizzaAndBeverageStrategy().generate();
+        Order order1=new Order(1,str1);
+        Order order2=new Order(2,str2);
+        Order order3=new Order(3,str3);
+
 
         Queue<Order> orderQueue=new LinkedList<Order>();
         orderQueue.add(order2);
@@ -183,14 +159,104 @@ public class Simulation {
 
     }
 
+  static  public void TEST_START_PROGRAM(){
 
-//    public static void main(String[] args) throws InterruptedException {
-//        launch(args);
-//       //YULIIA_TEST_CODE();
-//      //  ILLIATEST();
-//     //  TEST_ASSIGN_ORDER();
-//      //  OlesiaTest();
-//    }
+        //куки
+      Kitchen kitchen=new Kitchen();
+        CookList cookList=new CookList();
+        ICookingStrategy cookingStrategy=new SingleCookingStrategy();
+        cookList.setCookingStrategy(cookingStrategy);
+
+        ICook cook1=new Cook();
+        cook1.setId(1);
+        ICook cook2=new Cook();
+        ICook cook3=new Cook();
+        ICook cook4=new Cook();
+        ICook cook5=new Cook();
+      cook2.setId(2);
+      cook3.setId(3);
+      cook4.setId(4);
+      cook5.setId(5);
+        cookList.addToList(cook1);
+        cookList.addToList(cook2);
+        cookList.addToList(cook3);
+        cookList.addToList(cook4);
+        cookList.addToList(cook5);
+
+        kitchen.setCookList(cookList);
+
+        RestaurantSize restaurantSize=new RestaurantSize(100,100);//наприкалд
+
+        PickUpPoint pickUpPoint=new PickUpPoint();
+
+        Checkout checkout1=new Checkout(kitchen,pickUpPoint);
+        checkout1.setId(1);
+       Checkout checkout2=new Checkout(kitchen,pickUpPoint);
+        checkout2.setId(2);
+        Checkout checkout3=new Checkout(kitchen,pickUpPoint);
+        checkout3.setId(3);
+
+        List<Checkout> ch=new ArrayList<>();
+        ch.add(checkout1);
+        ch.add(checkout2);
+        ch.add(checkout3);
+
+        CheckoutList checkoutList=new CheckoutList(ch);
+
+        OrderBoard orderBoard= OrderBoard.getOrderBoard();
+        PizzaRestaurant pizzaRestaurant=new PizzaRestaurant(checkoutList, kitchen, 15, orderBoard, restaurantSize);
+
+      Menu menu = new Menu();
+      CustomerGenerator customerGenerator = CustomerGenerator.getInstance();
+
+      List<Customer> customers=new ArrayList<>();
+      CustomerManager customerManager=new CustomerManager(checkoutList);
+
+      Thread CustomerGenerator = new Thread(()->{
+          synchronized (lock2) {
+          while(true) {
+              if(checkout3.getCustomersCount()<=2) {
+                  Customer customer = customerGenerator.generateCustomer();
+                  System.out.println(customer);
+                  customers.add(customer);
+                  orderBoard.addCustomer(customer);
+                  customerManager.sendCustomerToCheckout(customer);
+                  kitchen.addOrderToQueue(customer.getOrder());
+              }
+
+
+              try {
+                  lock2.wait(1000);
+              }catch (Exception ex){}
+          }
+          }
+      }) ;
+    CustomerGenerator.start();
+        //кастомер менеджер
+
+
+
+
+
+      kitchen.assignOrder();
+
+
+
+
+
+
+
+
+    }
+
+
+    public static void main(String[] args) throws InterruptedException {
+    //   YULIIA_TEST_CODE();
+      //  ILLIATEST();
+    //   TEST_ASSIGN_ORDER();
+      //  OlesiaTest();
+        TEST_START_PROGRAM();
+    }
     public static void ILLIATEST() {
        /* Kitchen k = new Kitchen();
         CookList cooklist = new CookList();

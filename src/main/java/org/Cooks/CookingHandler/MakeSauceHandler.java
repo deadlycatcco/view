@@ -10,15 +10,16 @@ public class MakeSauceHandler extends BaseHandler{
     public void prepare() {
         List<AbstractProduct> products = currentCook.getOrder().getProducts();
         List<Pizza> pizzas = new ArrayList<>();
-        for (var pizza : products)
+        for (var pizza : products) {
             pizzas.add((Pizza) pizza);
+        }
         for(var pizza : pizzas) {
             synchronized (this) {
                 try {
                     wait(1000);
-                    System.out.println("Making sauce by "+ currentCook.hashCode());
+                    System.out.println("Making sauce by "+ currentCook.getId());
                     pizza.getNextStage();
-                    nextHandler.prepare();
+
                 }catch (Exception ex) {
                     System.out.println(ex);
                 }

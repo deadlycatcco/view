@@ -1,11 +1,10 @@
 package org.PizzaRestaurant;
-import org.Cooks.Cook;
-import org.Cooks.ICook;
+
 import org.Cooks.CookList;
+import org.Cooks.ICook;
 import org.order.Order;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
 public class Kitchen {
@@ -19,17 +18,19 @@ public class Kitchen {
     }
     private final Object lock = new Object();
     public void assignOrder() {
-
-        System.out.println("size" +orderQueue.size());
         Thread thread1 = new Thread(() -> {
             while (true) {
+
                 synchronized (lock) {
+
+
                    if (!orderQueue.isEmpty() && !cookList.isEmpty()) {
+
                         ICook cook = null;
                        if(cookList.findFirstFree()!=null){
                             cook=cookList.findFirstFree();
                             Order order = (Order) orderQueue.poll();
-                            System.out.println("кук "+cook.hashCode()+" взяв ордер "+order.getId());
+                            System.out.println("кук "+cook.getId()+" взяв ордер "+order.getId()+" "+order);
                             cook.addOrder(order);
                         }
                    }

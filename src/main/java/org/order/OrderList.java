@@ -27,4 +27,8 @@ public class OrderList {
     {
         return orderQueue.contains(order);
     }
+
+    public ArrayList<Order> getOrderQueue() {
+        return orderQueue;
+    }
 }

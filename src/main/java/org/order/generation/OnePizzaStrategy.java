@@ -16,7 +16,10 @@ public class OnePizzaStrategy implements IOrderStrategy{
         List<Pizza> pizzas = Menu.getPizzas();
 
         int pizzaNumber = ThreadLocalRandom.current().nextInt(0, pizzas.size());
-        orderProducts.add(pizzas.get(pizzaNumber));
+        Pizza originalPizza = pizzas.get(pizzaNumber);
+
+        Pizza copiedPizza = new Pizza(originalPizza);
+        orderProducts.add(copiedPizza);
 
         return orderProducts;
     }

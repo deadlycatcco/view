@@ -1,6 +1,7 @@
 package org.order;
 
 import org.menu_and_pizza.AbstractProduct;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +18,7 @@ public class Order {
         this.orderBoard = OrderBoard.getOrderBoard();
         this.status = OrderStatus.NEW;
     }
-    public Order() {
-        this.orderBoard = OrderBoard.getOrderBoard();
-    }
+
 
     public void changeStatus(OrderStatus newOrderStatus){
         try {

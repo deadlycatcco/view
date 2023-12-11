@@ -3,6 +3,7 @@ import org.Cooks.CookingStrategy.ICookingStrategy;
 import org.order.Order;
 
 public class Cook implements ICook{
+   private int id;
     private Boolean isFree;
     private Order order;
     private ICookingStrategy strategy;
@@ -39,7 +40,9 @@ public class Cook implements ICook{
     public void cookWithStrategy() {
         this.strategy.cook(this);
     }
-
+    public void reGiveOrder(Cook cook) {
+        cook.addOrder(getOrder());
+    }
     public void sendCompleteOrder() {
         order = null;
     }
@@ -53,6 +56,13 @@ public class Cook implements ICook{
     }
     public void setBusy() {
         this.isFree = false;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    public int getId() {
+        return id;
     }
 
 

@@ -6,12 +6,10 @@ import org.Checkout.CheckoutList;
 import java.util.Comparator;
 
 public class CustomerManager {
-    private final CustomerGenerator customerGenerator;
     private CheckoutList checkoutList;
 
     public CustomerManager(CheckoutList checkoutList){
         this.checkoutList=checkoutList;
-        customerGenerator=new CustomerGenerator();
     }
     public Checkout findBestCheckoutQueue(){
         return checkoutList.getCheckouts().stream()
@@ -19,8 +17,8 @@ public class CustomerManager {
                 .orElse(null);
     }
 
-    public void sendCustomerToCheckout(){
-        Customer customer =customerGenerator.generateCustomer();
+    public void sendCustomerToCheckout(Customer customer){
+
         Checkout ch=findBestCheckoutQueue();
 
         if(ch!=null){

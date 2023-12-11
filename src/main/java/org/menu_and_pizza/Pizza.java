@@ -3,6 +3,13 @@ package org.menu_and_pizza;
 public class Pizza extends AbstractProduct{
     private PizzaCookingStage currentCookingStage;
 
+
+    public Pizza(Pizza original) {
+
+        super(original.getName(), original.getPrice());
+        currentCookingStage = PizzaCookingStage.START;
+
+    }
    public PizzaCookingStage whichStepToDo() {
        return currentCookingStage;
    }
@@ -38,6 +45,9 @@ public class Pizza extends AbstractProduct{
     public Pizza(String name, double price){
         super(name, price);
         currentCookingStage = PizzaCookingStage.START;
+    }
+    public void setStart() {
+       currentCookingStage = PizzaCookingStage.START;
     }
 
     @Override

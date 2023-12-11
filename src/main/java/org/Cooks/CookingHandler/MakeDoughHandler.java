@@ -16,9 +16,8 @@ public class MakeDoughHandler extends BaseHandler{
             synchronized (this) {
                 try {
                     wait(1000);
-                    System.out.println("Making dough by "+ currentCook.hashCode());
+                    System.out.println("Making dough by "+ currentCook.getId());
                     pizza.getNextStage();
-                    nextHandler.prepare();
                 }catch (Exception ex) {
                     System.out.println(ex);
                 }

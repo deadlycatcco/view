@@ -4,6 +4,7 @@ import org.order.Order;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CustomerList {
     List<Customer> customerArrayList;
@@ -13,7 +14,10 @@ public class CustomerList {
     }
 
     public void takeOrderAndLeave(Order order){
-
+        Optional<Customer> customer  =customerArrayList.stream().filter(x->x.getOrder().equals(order)).findFirst();
+        if(customer.isPresent()){
+            deleteFromList(customer.get());
+        }
     }
     public void addToList(Customer customer){
         customerArrayList.add(customer);

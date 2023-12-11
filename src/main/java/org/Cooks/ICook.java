@@ -1,6 +1,7 @@
 package org.Cooks;
+
 import org.Cooks.CookingStrategy.ICookingStrategy;
-import org.order.*;
+import org.order.Order;
 public interface ICook {
 
     public void addOrder(Order order);
@@ -12,5 +13,8 @@ public interface ICook {
     public Boolean isFree();
     public void setFree();
     public void setBusy();
+    public void setId(int id);
+    public int getId() ;
+    public void reGiveOrder(Cook cook);
 
 }

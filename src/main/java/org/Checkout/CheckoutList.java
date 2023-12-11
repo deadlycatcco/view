@@ -1,18 +1,27 @@
 package org.Checkout;
 
+import org.PizzaRestaurant.Kitchen;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CheckoutList {
     List<Checkout> checkouts = new ArrayList<>();
-    List<Thread> threads;
+    List<Thread> checkoutsThreads;
+    PickUpPoint pickUpPoint;
+    Thread pickUpPointThread;
 
     public CheckoutList(List<Checkout> checkouts) {
         this.checkouts = checkouts;
-        threads = new ArrayList<>();
+        checkoutsThreads = new ArrayList<>();
+        pickUpPoint=new PickUpPoint();
     }
-
+    public CheckoutList(int numberCheckouts, Kitchen kitchen){
+        pickUpPoint=new PickUpPoint();
+        createCheckouts(numberCheckouts,kitchen);
+        checkoutsThreads=new ArrayList<>();
+    }
     public void addToList(Checkout checkout) {
         checkouts.add(checkout);
     }
@@ -30,20 +39,29 @@ public class CheckoutList {
     }
 
     private void createAllCheckoutThread() {
-        threads = checkouts.stream()
+        checkoutsThreads = checkouts.stream()
                 .map(x -> new Thread(x))
                 .collect(Collectors.toList());
 
+        pickUpPointThread=new Thread(pickUpPoint);
 
     }
     public void runAllCheckoutThread(){
         createAllCheckoutThread();
-        if(!threads.isEmpty()){
-            threads.stream().forEach(x->x.start());
+        if(!checkoutsThreads.isEmpty()){
+            checkoutsThreads.stream().forEach(x->x.start());
         }
+        pickUpPointThread.start();
     }
 
-    public List<Thread> getThreads() {
-        return threads;
+    public List<Thread> getCheckoutsThreads() {
+        return checkoutsThreads;
+    }
+    private List<Checkout> createCheckouts(int numberCheckouts, Kitchen kitchen){
+        List<Checkout> checkouts1=new ArrayList<>();
+        for(int i=0;i<numberCheckouts;i++){
+            checkouts1.add(new Checkout(kitchen,pickUpPoint));
+        }
+        return checkouts1;
     }
 }

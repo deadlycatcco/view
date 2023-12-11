@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -16,7 +17,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.Controller;
 import org.Simulation.Simulation;
 import static java.lang.Thread.sleep;
 
@@ -26,6 +30,8 @@ public class HelloApplication extends Application {
     private static final String IMAGE_URL = "/Images/cafe.png";
     private static final int GRID_ROWS = 14;
     private static final int GRID_COLUMNS = 20;
+    private Controller controller = new Controller();
+
     private final Object monitor = new Object();
 
     private GridPane gridPane;
@@ -34,9 +40,51 @@ public class HelloApplication extends Application {
     private double cellWidth = 40; // Adjust the size of each cell
     private double cellHeight = 40; // Adjust the size of each cell
 
+    //private static int checkoutsAmt;
+
+//    public static int getCheckoutsAmt() {
+//        return checkoutsAmt;
+//    }
 
     @Override
-    public void start(Stage primaryStage) throws InterruptedException {
+    public void start(Stage primaryStage) {
+        // Show InputDialog to get K
+        int k = -1;
+        InputDialog inputDialog = new InputDialog();
+
+        while (k < 1 || k > 5) {
+            Optional<Integer> result = showInputDialog();
+
+            if (result.isPresent()) {
+                try {
+                    k = result.get();
+
+                    if (k <  1 || k > 5) {
+                        // Show an alert for invalid input
+                        showAlert("Invalid Input", "K should be between 1 and 5");
+                    }
+                } catch (NumberFormatException e) {
+                    // Show an alert for invalid number format
+                    showAlert("Invalid Input", "Please enter a valid number");
+                }
+            } else {
+                // User canceled the input, exit the application
+                System.exit(0);
+            }
+        }
+
+        // Continue with your program using the value of k
+        try {
+            setupPrimaryStage(primaryStage, k);
+            System.out.println("Received K: " + k);
+            // Now you can proceed to set up your primaryStage and other parts of your application
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public void setupPrimaryStage(Stage primaryStage, int kValue) throws InterruptedException {
         primaryStage.setTitle("PizzaRestaurant");
 
         Image backgroundImage = new Image(getClass().getResource(IMAGE_URL).toExternalForm());
@@ -58,6 +106,14 @@ public class HelloApplication extends Application {
         stackPane.setStyle("-fx-background-color: red;");
 
 //        openNewWindow();
+
+       // InputDialog inputDialog = new InputDialog();
+//        inputDialog.start(new Stage());
+//
+//    // Retrieve the value of checkoutsAmt from InputDialog
+//    checkoutsAmt = InputDialog.getCheckoutAmount();
+
+        int checkoutsAmt = kValue;
 
         // Add your cells to the grid here
         for (int row = 0; row < GRID_ROWS; row++) {
@@ -94,7 +150,7 @@ public class HelloApplication extends Application {
 
 //Каси
         int currentCheckout = 3;
-        int checkoutsAmt = 5;
+       // int checkoutsAmt = 5;
         List<CheckoutModel> checkoutModels = new ArrayList<>();
 
         int position = 2;
@@ -278,35 +334,80 @@ public class HelloApplication extends Application {
         BorderPane root = new BorderPane();
         root.setCenter(stackPane);
 
-        Scene scene = new Scene(root, backgroundImage.getWidth()+100, backgroundImage.getHeight());
+        Scene scene = new Scene(root, backgroundImage.getWidth(), backgroundImage.getHeight());
         primaryStage.setScene(scene);
         primaryStage.setHeight(cellHeight * (GRID_ROWS+1));
         primaryStage.setWidth(cellWidth * (GRID_COLUMNS+0.5));
         primaryStage.show();
     }
 
+//    public static void setCheckoutAmount(int checkoutAmount) {
+//        checkoutsAmt = checkoutAmount;
+//        // Handle the checkoutAmount value as needed
+//        System.out.println("Received checkoutAmount: " + checkoutAmount);
+//    }
+
     public static void main(String[] args) {
         Simulation.YULIIA_TEST_CODE();
-
         launch(args);
-//        for(int i = 0; i < 10; i++){
-//            System.out.println("1\n");
-//        }
+    }
+    private Optional<Integer> showInputDialog() {
+        Dialog<Integer> dialog = new Dialog<>();
+        dialog.setTitle("Input Dialog");
+        dialog.setHeaderText("Enter K:");
+
+        // Set the icon (if you have one)
+        // dialog.setGraphic(new ImageView(this.getClass().getResource("icon.png").toString()));
+
+        // Set the button types
+        ButtonType enterButtonType = new ButtonType("Enter", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(enterButtonType, ButtonType.CANCEL);
+
+        // Create the K label and field
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField kField = new TextField();
+        kField.setPromptText("K");
+
+        grid.add(new Label("K:"), 0, 0);
+        grid.add(kField, 1, 0);
+
+        // Enable/Disable login button depending on whether a K was entered
+        Node enterButton = dialog.getDialogPane().lookupButton(enterButtonType);
+        enterButton.setDisable(true);
+
+        // Do some validation (using the Java 8 lambda syntax)
+        kField.textProperty().addListener((observable, oldValue, newValue) -> {
+            enterButton.setDisable(newValue.trim().isEmpty());
+        });
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Request focus on the K field by default
+        Platform.runLater(kField::requestFocus);
+
+        // Convert the result to a K value when the login button is clicked
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == enterButtonType) {
+                return Integer.parseInt(kField.getText());
+            }
+            return null;
+        });
+
+        return dialog.showAndWait();
     }
 
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
 
-
-//    private void openNewWindow() {
-//        Stage newStage = new Stage();
-//        newStage.setTitle("New Window");
-//
-//        StackPane layout = new StackPane();
-//        Scene scene = new Scene(layout, 500, 400);
-//
-//        newStage.setScene(scene);
-//
-//        newStage.show();
-//    }
 }
 
 

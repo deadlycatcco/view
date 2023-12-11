@@ -5,7 +5,7 @@ import javafx.scene.image.ImageView;
 
 public class CookPoint {
 
-    private String Gif_url ="D:\\MyJavaFXApp\\src\\main\\resources\\Images\\cookingPoint.png";
+    private String Gif_url ="D:\\навчання\\3 курс\\view\\view2\\view\\src\\main\\resources\\Images\\cookingPoint.png";
     private Image gifImage;
     private ImageView gifImageView;
 

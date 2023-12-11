@@ -12,17 +12,18 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-
+import org.Simulation.Simulation;
 import static java.lang.Thread.sleep;
 
 public class HelloApplication extends Application {
     //private static final String IMAGE_URL = "https://images.squarespace-cdn.com/content/v1/551a19f8e4b0e8322a93850a/1566776697516-A69UYWW58V0871IQXG9C/Title_Image.png";
     //private static final String GIF_URL = "https://img.itch.zone/aW1nLzMzMzY4OTguZ2lm/original/0Ut41Y.gif";
-    private static final String IMAGE_URL = "D:\\навчання\\3 курс\\view\\view2\\view\\src\\main\\resources\\Images\\cafe.png";
+    private static final String IMAGE_URL = "/Images/cafe.png";
     private static final int GRID_ROWS = 14;
     private static final int GRID_COLUMNS = 20;
     private final Object monitor = new Object();
@@ -36,11 +37,9 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws InterruptedException {
+        primaryStage.setTitle("PizzaRestaurant");
 
-
-        primaryStage.setTitle("BackgroundGridExample");
-
-        Image backgroundImage = new Image(IMAGE_URL);
+        Image backgroundImage = new Image(getClass().getResource(IMAGE_URL).toExternalForm());
         BackgroundImage background = new BackgroundImage(backgroundImage,
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
@@ -57,6 +56,8 @@ public class HelloApplication extends Application {
 
         StackPane stackPane = new StackPane(imageView, gridPane);
         stackPane.setStyle("-fx-background-color: red;");
+
+//        openNewWindow();
 
         // Add your cells to the grid here
         for (int row = 0; row < GRID_ROWS; row++) {
@@ -133,7 +134,7 @@ public class HelloApplication extends Application {
         }
 
 
-        int AmountOfCooks = 3;
+        int AmountOfCooks = 1;
         int tempAmountOfCooks = AmountOfCooks;
         int defaultRow = 1, defaultCol = 15;
         List<CookModel> cookModels = new ArrayList<>();
@@ -157,50 +158,48 @@ public class HelloApplication extends Application {
 
 
             Thread thread1 = new Thread(() -> {
-                //synchronized (this) {
+               // synchronized (this) {
                     Boolean ok = false;
                      int j = 1;
                     Thread.currentThread().setName("thread1");
                     System.out.println("Hello, I'm thread for baseModel 1 (" + (AmountOfCooks - finalTempAmount) +
                             "), thread name: " + Thread.currentThread().getName());
-                    synchronized (this){
-                    while (true){
+                    synchronized (this) {
+                        while (true) {
 
-                        int cu = cookModelTemp.currentPoint;
+                            int cu = cookModelTemp.currentPoint;
 
-                        if(cookPointsStatus.get(cu) != 1){
+                            if (cookPointsStatus.get(cu) != 1) {
 
-                            if(cu != 0)
-                            {
-                                synchronized (monitor) {
-                                    cookPointsStatus.set(cu - 1, 0);
+                                if (cu != 0) {
+                                    synchronized (monitor) {
+                                        cookPointsStatus.set(cu - 1, 0);
+                                    }
                                 }
+                                Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cookModelTemp, cookPoints.get(cu).getPositionX(),
+                                        cookPoints.get(cu).getPositionY() - 1));
+                                cookModelTemp.currentPoint++;
+                                cookPointsStatus.set(cu, 1);
+                            } else {
+                                continue;
                             }
-                            Platform.runLater(()->movingHandler.moveCookModelTo(gridPane, cookModelTemp, cookPoints.get(cu).getPositionX(),
-                                    cookPoints.get(cu).getPositionY()-2));
-                            cookModelTemp.currentPoint++;
-                            cookPointsStatus.set(cu, 1);
-                        }
-                        else{
-                            continue;
-                        }
 
-                        try {
-                            sleep(3000);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
+                            try {
+                                Thread.sleep(3000);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
 
-                    if(cookModelTemp.currentPoint > 4){
-                        cookPointsStatus.set(cu, 0);
+                            if (cookModelTemp.currentPoint > 4) {
+                                cookPointsStatus.set(cu, 0);
 //                        Platform.runLater(()->movingHandler.moveCookModelTo(gridPane, cookModelTemp, cookPoints.get(cu).getPositionX(),
 //                                cookPoints.get(cu).getPositionY()-2));
-                        Platform.runLater(()->movingHandler.moveCookModelTo(gridPane, cookModelTemp, defaultRow,
-                                defaultCol));
-                        break;
+                                Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cookModelTemp, defaultRow,
+                                        defaultCol));
+                                break;
+                            }
+                        }
                     }
-                     }
-               }
             });
             tempAmountOfCooks--;
             thread1.start();
@@ -287,8 +286,27 @@ public class HelloApplication extends Application {
     }
 
     public static void main(String[] args) {
+        Simulation.YULIIA_TEST_CODE();
+
         launch(args);
+//        for(int i = 0; i < 10; i++){
+//            System.out.println("1\n");
+//        }
     }
+
+
+
+//    private void openNewWindow() {
+//        Stage newStage = new Stage();
+//        newStage.setTitle("New Window");
+//
+//        StackPane layout = new StackPane();
+//        Scene scene = new Scene(layout, 500, 400);
+//
+//        newStage.setScene(scene);
+//
+//        newStage.show();
+//    }
 }
 
 

@@ -6,7 +6,7 @@ import javafx.scene.image.ImageView;
 public class BaseModel {
     //private String Gif_url = "https://img.itch.zone/aW1nLzMzMzY4OTguZ2lm/original/0Ut41Y.gif";
 
-    private String Gif_url ="D:\\навчання\\3 курс\\view\\view2\\view\\src\\main\\resources\\Images\\customer1.png";
+    private String Gif_url ="/Images/customer1.png";
     private Image gifImage;
     private ImageView gifImageView;
 
@@ -16,7 +16,7 @@ public class BaseModel {
     public BaseModel(){
         this.positionY = 0;
         this.positionX = 0;
-        this.gifImage = new Image(Gif_url);
+        this.gifImage = new Image(getClass().getResource(Gif_url).toExternalForm());
         this.gifImageView = new ImageView(gifImage);
     }
     public BaseModel(String gif_url){

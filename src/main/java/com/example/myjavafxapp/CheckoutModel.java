@@ -3,7 +3,7 @@ package com.example.myjavafxapp;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 public class CheckoutModel {
-    private String Gif_url = "D:\\навчання\\3 курс\\view\\view2\\view\\src\\main\\resources\\Images\\checkout.png";
+    private String Gif_url = "/Images/checkout.png";
     private Image gifImage;
     private ImageView gifImageView;
 
@@ -11,7 +11,7 @@ public class CheckoutModel {
     private int positionY;
 
     public CheckoutModel(){
-        this.gifImage = new Image(Gif_url);
+        this.gifImage = new Image(getClass().getResource(Gif_url).toExternalForm());
         this.gifImageView = new ImageView(gifImage);
     }
     public int getPositionX() {

@@ -1,5 +1,10 @@
 package org.order;
 
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.Customer.ICustomerObserver;
 
 import java.util.ArrayList;
@@ -9,6 +14,9 @@ public final class OrderBoard implements IOrderBoardObserver {
 
     private static OrderBoard orderBoard;
     public List<ICustomerObserver> customers;
+    private VBox messagesContainer = new VBox(); // Container for messages
+    private Label messagesLabel = new Label();
+
 
 
     private OrderBoard() {
@@ -19,6 +27,23 @@ public final class OrderBoard implements IOrderBoardObserver {
             ex.printStackTrace();
         }
         this.customers = new ArrayList<>();
+
+
+        // Initialize UI components
+        messagesContainer = new VBox();
+        messagesLabel = new Label("Order Board Messages:");
+
+        // Create a new stage for displaying messages
+        Stage messagesStage = new Stage();
+        messagesStage.setTitle("Order Board Messages");
+
+        // Set up the UI for the messages stage
+        messagesContainer.getChildren().add(messagesLabel);
+        Scene messagesScene = new Scene(messagesContainer, 400, 300);
+        messagesStage.setScene(messagesScene);
+
+        // Show the messages stage
+        messagesStage.show();
     }
 
 
@@ -52,7 +77,7 @@ public final class OrderBoard implements IOrderBoardObserver {
             // Перевірка на null для id та status
             if (id != null && status != null) {
                 // Оновлення статусу ордера в ордербоард
-                System.out.println("OrderBoard: Ордер " + id + " змінив свій статус на " + status);
+                displayMessage("OrderBoard: Ордер " + id + " змінив свій статус на " + status);
 
                 // Перевірка на завершення замовлення
                 if (status == OrderStatus.COMPLETED) {
@@ -89,6 +114,12 @@ public final class OrderBoard implements IOrderBoardObserver {
             e.printStackTrace();
         }
 
+    }
+
+    private void displayMessage(String message) {
+        // Display a message in the new stage
+        Label messageLabel = new Label(message);
+        messagesContainer.getChildren().add(messageLabel);
     }
 
 }

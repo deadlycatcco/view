@@ -1,5 +1,7 @@
 package org.Simulation;
 
+import javafx.application.Platform;
+import org.Checkout.Checkout;
 import org.Cooks.Cook;
 import org.Cooks.CookList;
 import org.Cooks.CookingStrategy.ICookingStrategy;
@@ -20,12 +22,17 @@ import org.PizzaRestaurant.PizzaRestaurantBuilder;
 import org.PizzaRestaurant.PizzaRestaurantDirector;
 import org.menu_and_pizza.AbstractProduct;
 import org.menu_and_pizza.Pizza;
+import org.order.IOrderBoardObserver;
 import org.order.Order;
+import org.order.OrderBoard;
+import org.order.OrderStatus;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+
+import static javafx.application.Application.launch;
 
 public class Simulation {
     private PizzaRestaurant pizzaRestaurant;
@@ -50,29 +57,47 @@ public class Simulation {
     }
 
     public static void YULIIA_TEST_CODE(){
-        /*System.out.println("Hello, i`m pizza restaurant");
+        Platform.runLater(() -> {
+            System.out.println("Hello, i`m pizza restaurant");
+
+            Menu menu = new Menu();
+            OrderBoard orderBoard= OrderBoard.getOrderBoard();
+
+            CustomerGenerator customerGenerator = CustomerGenerator.getInstance();
+
+            List<Customer> customers=new ArrayList<>();
+
+            for(int i = 0; i< 5; i++) {
+                Customer customer=customerGenerator.generateCustomer();
+                customers.add(customer);
+                orderBoard.addCustomer(customer);
+            }
+            for(var c: customers){
+                c.getOrder().changeStatus(OrderStatus.NEW);
+            }
+        });
 
 //ордербоард сповіщає кастомера щоб ордер готовий
-        IOrderBoardObserver orderObserver=OrderBoard.getOrderBoard();
-        ICustomerObserver customer1=new Customer();
-        ICustomerObserver customer2=new Customer();
-        customer1.setId(1);
-        customer2.setId(2);
-        orderObserver.addCustomer(customer1);
-        orderObserver.addCustomer(customer2);
-
-        //ордери сповіщають ордербоард про зміну свого статусу
-        Order order1=new Order();
-        Order order2=new Order();
-        Order order3=new Order();
-        order1.setId(1);
-        order2.setId(2);
-        order3.setId(3);
-
-        order1.changeStatus(OrderStatus.NEW);
-        order2.changeStatus(OrderStatus.COMPLETED);
-        order3.changeStatus(OrderStatus.PREPARING);*/
-
+//        IOrderBoardObserver orderObserver= OrderBoard.getOrderBoard();
+//        ICustomerObserver customer1=new Customer();
+//        ICustomerObserver customer2=new Customer();
+//        customer1.setId(1);
+//        customer2.setId(2);
+//        orderObserver.addCustomer(customer1);
+//        orderObserver.addCustomer(customer2);
+//
+//        //ордери сповіщають ордербоард про зміну свого статусу
+//        Order order1=new Order();
+//        Order order2=new Order();
+//        Order order3=new Order();
+//        order1.setId(1);
+//        order2.setId(2);
+//        order3.setId(3);
+//
+//        order1.changeStatus(OrderStatus.NEW);
+//        order2.changeStatus(OrderStatus.COMPLETED);
+//        order3.changeStatus(OrderStatus.PREPARING);
+//
 
 
       /*  ICustomerObserver customer1=new Customer();
@@ -103,7 +128,7 @@ public class Simulation {
 //        ch.addToList(checkout1);
 //        ch.addToList(checkout2);
 //        ch.addToList(checkout3);
-//
+
 //        CustomerManager customerManager=new CustomerManager(ch);
 //
 //        for(int i=0;i<5;++i)
@@ -159,12 +184,13 @@ public class Simulation {
     }
 
 
-    public static void main(String[] args) throws InterruptedException {
-    //   YULIIA_TEST_CODE();
-      //  ILLIATEST();
-     //  TEST_ASSIGN_ORDER();
-      //  OlesiaTest();
-    }
+//    public static void main(String[] args) throws InterruptedException {
+//        launch(args);
+//       //YULIIA_TEST_CODE();
+//      //  ILLIATEST();
+//     //  TEST_ASSIGN_ORDER();
+//      //  OlesiaTest();
+//    }
     public static void ILLIATEST() {
        /* Kitchen k = new Kitchen();
         CookList cooklist = new CookList();

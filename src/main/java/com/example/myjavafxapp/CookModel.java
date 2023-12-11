@@ -7,8 +7,8 @@ public class CookModel extends BaseModel{
 
     public int currentPoint = 0;
     public CookModel(){
-        this.setGif_url("D:\\навчання\\3 курс\\view\\view2\\view\\src\\main\\resources\\Images\\Drawing 4 (4).png");
-        this.setGifImage(new Image(this.getGif_url()));
+        this.setGif_url("/Images/Drawing 4 (4).png");
+        this.setGifImage(new Image(getClass().getResource(this.getGif_url()).toExternalForm()));
         this.setGifImageView(new ImageView(this.getGifImage()));
     }
 }

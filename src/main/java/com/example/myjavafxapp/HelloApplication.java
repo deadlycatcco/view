@@ -26,15 +26,10 @@ import org.Controller;
 import org.Simulation.Simulation;
 import static java.lang.Thread.sleep;
 
-<<<<<<< HEAD
-public class HelloApplication extends Application {
-    private TextArea outputTextArea;
-    //private final CountDownLatch customerMoveLatch = new CountDownLatch(1);
-=======
 public class  HelloApplication extends Application {
 
     private final CountDownLatch customerMoveLatch = new CountDownLatch(1);
->>>>>>> acbecc78b39415e206b2dda194f2017164d72edb
+    private TextArea outputTextArea;
     //private static final String IMAGE_URL = "https://images.squarespace-cdn.com/content/v1/551a19f8e4b0e8322a93850a/1566776697516-A69UYWW58V0871IQXG9C/Title_Image.png";
     //private static final String GIF_URL = "https://img.itch.zone/aW1nLzMzMzY4OTguZ2lm/original/0Ut41Y.gif";
     private static final String IMAGE_URL = "/Images/cafe.png";
@@ -55,11 +50,12 @@ public class  HelloApplication extends Application {
     List<List<Integer>> checkoutList;
     //private static int checkoutsAmt;
 
-//    public static int getCheckoutsAmt() {
+    //    public static int getCheckoutsAmt() {
 //        return checkoutsAmt;
 //    }
     private int checkAmount = 0;
-    private  int cookAmount = 0;
+    private int cookAmount = 0;
+
     @Override
     public void start(Stage primaryStage) {
         // Show InputDialog to get K
@@ -91,7 +87,7 @@ public class  HelloApplication extends Application {
             cookAmount = c;
             setupPrimaryStage(primaryStage, k, c);
             controller.setAmountOfCheckout(k);
-           // controller.setCValue(c);
+            // controller.setCValue(c);
             System.out.println("Received K: " + k + ", C: " + c);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -123,7 +119,7 @@ public class  HelloApplication extends Application {
 
 //        openNewWindow();
 
-       // InputDialog inputDialog = new InputDialog();
+        // InputDialog inputDialog = new InputDialog();
 //        inputDialog.start(new Stage());
 //
 //    // Retrieve the value of checkoutsAmt from InputDialog
@@ -141,45 +137,45 @@ public class  HelloApplication extends Application {
 
 //Каси
         int currentCheckout = 0;
-       // int checkoutsAmt = 5;
-         checkoutModels = new ArrayList<>();
+        // int checkoutsAmt = 5;
+        checkoutModels = new ArrayList<>();
 
         int position = 2;
-        for(int i = 1; i <= checkoutsAmt; i++){
+        for (int i = 1; i <= checkoutsAmt; i++) {
             CheckoutModel checkoutModel = new CheckoutModel();
             checkoutModel.setPositionX(position);
             checkoutModel.setPositionY(0);
             checkoutModels.add(checkoutModel);
-            Pane checkoutCell = movingHandler.getCell(gridPane, position,0);
+            Pane checkoutCell = movingHandler.getCell(gridPane, position, 0);
             double cellCheckoutWidth = checkoutCell.getMinWidth();
             double cellCheckoutHeight = checkoutCell.getMinHeight();
             checkoutModel.getGifImageView().setFitWidth(cellCheckoutWidth * 0.95); // Adjust the factor based on your preference
             checkoutModel.getGifImageView().setFitHeight(cellCheckoutHeight * 0.95);
 
             checkoutCell.getChildren().add(checkoutModel.getGifImageView());
-            position+= 2;
+            position += 2;
         }
 //Пойнти
         //int currentCookingPoint = 3;
         int cookingPointsAmt = 5;
 
         int positionCP = 2;
-        for(int i = 1; i <= cookingPointsAmt; i++){
+        for (int i = 1; i <= cookingPointsAmt; i++) {
             CookPoint cookingPoint = new CookPoint();
             String imageUrl = "/Images/cookingPoint_%d.png";
             cookingPoint.setGif_url(imageUrl, i);
             System.out.println(imageUrl);
             cookingPoint.setPositionX(positionCP);
-            cookingPoint.setPositionY(gridPane.getColumnCount()-1);
+            cookingPoint.setPositionY(gridPane.getColumnCount() - 1);
             cookPoints.add(cookingPoint);
-            Pane cookPointCell = movingHandler.getCell(gridPane, positionCP,gridPane.getColumnCount()-1);
+            Pane cookPointCell = movingHandler.getCell(gridPane, positionCP, gridPane.getColumnCount() - 1);
             double cellCheckoutWidth = cookPointCell.getMinWidth();
             double cellCheckoutHeight = cookPointCell.getMinHeight();
             cookingPoint.getGifImageView().setFitWidth(cellCheckoutWidth * 0.95); // Adjust the factor based on your preference
             cookingPoint.getGifImageView().setFitHeight(cellCheckoutHeight * 0.95);
 
             cookPointCell.getChildren().add(cookingPoint.getGifImageView());
-            positionCP+= 2;
+            positionCP += 2;
         }
 
 
@@ -260,16 +256,16 @@ public class  HelloApplication extends Application {
         Integer tempAmount = AmountOfCustomers;
         int defaultCustRow = 6;
         int defaultCustCol = 4;
-         baseModels = new ArrayList<>();
-         for(int i = 0; i < checkAmount; i++){
-             baseModels.add(new ArrayList<>());
-         }
+        baseModels = new ArrayList<>();
+        for (int i = 0; i < checkAmount; i++) {
+            baseModels.add(new ArrayList<>());
+        }
         final int finalCustTempAmount = tempAmount;
-         checkoutList = new ArrayList<>();
-         for(int i = 0; i < checkAmount; i++){
-             checkoutList.add(new ArrayList<>(Collections.nCopies(8, 1)));
-             checkoutList.get(i).set(0,0);
-         }
+        checkoutList = new ArrayList<>();
+        for (int i = 0; i < checkAmount; i++) {
+            checkoutList.add(new ArrayList<>(Collections.nCopies(8, 1)));
+            checkoutList.get(i).set(0, 0);
+        }
 
 
 //        while (tempAmount != 0) {
@@ -302,11 +298,11 @@ public class  HelloApplication extends Application {
 
         Scene scene = new Scene(root, backgroundImage.getWidth(), backgroundImage.getHeight());
         primaryStage.setScene(scene);
-        primaryStage.setHeight(cellHeight * (GRID_ROWS+1));
-        primaryStage.setWidth(cellWidth * (GRID_COLUMNS+0.5));
+        primaryStage.setHeight(cellHeight * (GRID_ROWS + 1));
+        primaryStage.setWidth(cellWidth * (GRID_COLUMNS + 0.5));
         primaryStage.show();
 
-        Controller.setHelloApplication(this);
+        Controller.setHelloApplication(com.example.myjavafxapp.HelloApplication.this);
         Controller.setSimulation(new Simulation());
 
         Controller.letsGo();
@@ -324,18 +320,21 @@ public class  HelloApplication extends Application {
 //       Application.launch(HelloApplication.class, args);
     }
 
-    public int getAmtCheck(){
+    public int getAmtCheck() {
         return checkAmount;
     }
-    public int getAmtCooks(){return cookAmount;}
 
-    public void CreateCustomer(int customerId, int checkoutId){
-        createCustomerOnView(customerId, checkoutModels.get(checkoutId), baseModels.get(checkoutId),checkoutList.get(checkoutId));
-       // moveToWaitZone(customerId, baseModels.get(checkoutId).get(customerId));
+    public int getAmtCooks() {
+        return cookAmount;
+    }
+
+    public void CreateCustomer(int customerId, int checkoutId) {
+        createCustomerOnView(customerId, checkoutModels.get(checkoutId), baseModels.get(checkoutId), checkoutList.get(checkoutId));
+        // moveToWaitZone(customerId, baseModels.get(checkoutId).get(customerId));
     }
 
     public void createCustomerOnView(Integer customerId, CheckoutModel checkoutModel,
-                                      List<BaseModel> baseModels, List<Integer> checkoutList) {
+                                     List<BaseModel> baseModels, List<Integer> checkoutList) {
 
         int defaultCustRow = 13;
         int defaultCustCol = 10;
@@ -390,79 +389,74 @@ public class  HelloApplication extends Application {
 ////////////////////////////////////////////////////////////////////////////
 
 
- public void moveToWaitZone(Integer customerId, int checkoutId){
-         Thread thread3 = new Thread(() -> {
+    public void moveToWaitZone(Integer customerId, int checkoutId) {
+        Thread thread3 = new Thread(() -> {
 
-             Boolean ok = false;
-             BaseModel customer;
-             Thread.currentThread().setName("thread3");
-             System.out.println("Hello, I'm thread for customer (" + customerId +
-                     "), thread name: " + Thread.currentThread().getName());
-             if(baseModels.get(checkoutId).size() >0) {
-                 customer = baseModels.get(checkoutId).get(0);
-                 int[] newPosition = findFreeCellInWaitzone(gridPane, 2, 9, 13, 13);
+            Boolean ok = false;
+            BaseModel customer;
+            Thread.currentThread().setName("thread3");
+            System.out.println("Hello, I'm thread for customer (" + customerId +
+                    "), thread name: " + Thread.currentThread().getName());
+            if (baseModels.get(checkoutId).size() > 0) {
+                customer = baseModels.get(checkoutId).get(0);
+                int[] newPosition = findFreeCellInWaitzone(gridPane, 2, 9, 13, 13);
 
-                 //Pane customerCell1 = movingHandler.getCell(gridPane, newPosition[0], newPosition[1]);
-                 //customerCell1.getChildren().add(new ImageView());
-                 Platform.runLater(() -> {
-                     movingHandler.moveBaseModelTo(gridPane, customer, newPosition[0], newPosition[1]);
-                 });
-                 moveWhenFree(checkoutId);
-             }
+                //Pane customerCell1 = movingHandler.getCell(gridPane, newPosition[0], newPosition[1]);
+                //customerCell1.getChildren().add(new ImageView());
+                Platform.runLater(() -> {
+                    movingHandler.moveBaseModelTo(gridPane, customer, newPosition[0], newPosition[1]);
+                });
+                moveWhenFree(checkoutId);
+            }
 
-         });
-         thread3.start();
-     try {
-         thread3.join();
-     }
-     catch (Exception e){
-         System.out.println(e.toString());
-     }
- }
+        });
+        thread3.start();
+        try {
+            thread3.join();
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+    }
 
-<<<<<<< HEAD
-=======
- private void moveWhenFree(int checkoutId){
-     Thread thread3 = new Thread(() -> {
-         synchronized (this) {
-             checkoutList.get(checkoutId).remove(1);
-             checkoutList.get(checkoutId).add(1);
+    private void moveWhenFree(int checkoutId) {
+        Thread thread3 = new Thread(() -> {
+            synchronized (this) {
+                checkoutList.get(checkoutId).remove(1);
+                checkoutList.get(checkoutId).add(1);
 
-             for (int i = 1; i < baseModels.get(checkoutId).size(); i++) {
-                 final int i2 = i;
-                 Platform.runLater(() -> {
-                     movingHandler.moveBaseModelTo(gridPane, baseModels.get(checkoutId).get(i2), baseModels.get(checkoutId).get(i2).getPositionX(),
-                             baseModels.get(checkoutId).get(i2).getPositionY() - 1);
-                 });
-             }
-         }
-         try {
-             Thread.sleep(3000);
-         } catch (InterruptedException e) {
-             throw new RuntimeException(e);
-         }
-     });
-     thread3.start();
+                for (int i = 1; i < baseModels.get(checkoutId).size(); i++) {
+                    final int i2 = i;
+                    Platform.runLater(() -> {
+                        movingHandler.moveBaseModelTo(gridPane, baseModels.get(checkoutId).get(i2), baseModels.get(checkoutId).get(i2).getPositionX(),
+                                baseModels.get(checkoutId).get(i2).getPositionY() - 1);
+                    });
+                }
+            }
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        thread3.start();
 
 
- }
->>>>>>> acbecc78b39415e206b2dda194f2017164d72edb
+    }
 
- private int[] findFreeCellInWaitzone(GridPane gridPane, int startRow, int startCol, int endRow, int endCol){
-     for (int row = startRow; row <= endRow; row++) {
-         for (int col = startCol; col <= endCol; col++) {
-             if (movingHandler.isCellFree(gridPane, row, col)) {
-                 return new int[]{row, col};
-             }
-         }
-     }
-     // No free cell found in the specified range
-     return null;
- }
-
+    private int[] findFreeCellInWaitzone(GridPane gridPane, int startRow, int startCol, int endRow, int endCol) {
+        for (int row = startRow; row <= endRow; row++) {
+            for (int col = startCol; col <= endCol; col++) {
+                if (movingHandler.isCellFree(gridPane, row, col)) {
+                    return new int[]{row, col};
+                }
+            }
+        }
+        // No free cell found in the specified range
+        return null;
+    }
 
 
-    public void CreateCook(){
+    public void CreateCook() {
         createCookOnView();
     }
 
@@ -474,7 +468,7 @@ public class  HelloApplication extends Application {
         final int finalTempAmount = tempAmountOfCooks;
         int cookingPointsAmt = 5;
         List<Integer> cookPointsStatus = new ArrayList<>();
-        for(int i = 0; i < cookingPointsAmt; i++){
+        for (int i = 0; i < cookingPointsAmt; i++) {
             cookPointsStatus.add(0);
         }
 
@@ -531,23 +525,22 @@ public class  HelloApplication extends Application {
     }
 
 
-    private void moveCookToDough(CookModel cook){
-      CookPoint doughTable = cookPoints.get(0);
+    private void moveCookToDough(CookModel cook) {
+        CookPoint doughTable = cookPoints.get(0);
         Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cook, doughTable.getPositionX(),
-                doughTable.getPositionY()-1));
+                doughTable.getPositionY() - 1));
     }
-    private void moveCookToSauce(CookModel cook){
+
+    private void moveCookToSauce(CookModel cook) {
         CookPoint sauceTable = cookPoints.get(1);
         Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cook, sauceTable.getPositionX(),
-                sauceTable.getPositionY()-1));
+                sauceTable.getPositionY() - 1));
     }
 
-
-////////////////////////////////////////////////////////////////////////////
     private Optional<Pair<Integer, Integer>> showInputDialog() {
-    Dialog<Pair<Integer, Integer>> dialog = new Dialog<>();
-    dialog.setTitle("Input Dialog");
-    dialog.setHeaderText("Enter K and C:");
+        Dialog<Pair<Integer, Integer>> dialog = new Dialog<>();
+        dialog.setTitle("Input Dialog");
+        dialog.setHeaderText("Enter K and C:");
 
         // Set the icon (if you have one)
         // dialog.setGraphic(new ImageView(this.getClass().getResource("icon.png").toString()));

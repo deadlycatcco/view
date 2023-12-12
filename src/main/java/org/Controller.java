@@ -39,6 +39,10 @@ public class Controller {
         helloApplication.CreateCustomer(customerId,checkoutId-1);
     }
 
+    public void movetowait(int customerId, int checkoutId){
+        helloApplication.moveToWaitZone(customerId-1, checkoutId-1);
+    }
+
     public void startSimulation(){
         Simulation.TEST_START_PROGRAM();
     }

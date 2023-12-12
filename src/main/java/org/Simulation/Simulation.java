@@ -233,16 +233,19 @@ public class Simulation {
                   kitchen.addOrderToQueue(customer.getOrder());
 
                   controller.setCustomerIdAndCheckout(customer.getId(), checkoutId);
+                  controller.movetowait(customer.getId(), checkoutId);
+
               }
 
 
               try {
                   lock2.wait(1000);
               }catch (Exception ex){}
+            }
           }
-          }
-      }) ;
+      });
     CustomerGenerator.start();
+
         //кастомер менеджер
       kitchen.assignOrder();
 

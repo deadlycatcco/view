@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.Controller;
@@ -25,6 +26,8 @@ import org.Simulation.Simulation;
 import static java.lang.Thread.sleep;
 
 public class HelloApplication extends Application {
+
+    private final CountDownLatch customerMoveLatch = new CountDownLatch(1);
     //private static final String IMAGE_URL = "https://images.squarespace-cdn.com/content/v1/551a19f8e4b0e8322a93850a/1566776697516-A69UYWW58V0871IQXG9C/Title_Image.png";
     //private static final String GIF_URL = "https://img.itch.zone/aW1nLzMzMzY4OTguZ2lm/original/0Ut41Y.gif";
     private static final String IMAGE_URL = "/Images/cafe.png";
@@ -127,31 +130,6 @@ public class HelloApplication extends Application {
                 gridPane.add(cell, col, row);
             }
         }
-
-        Pane cell1 = movingHandler.getCell(gridPane, 2,1);
-        BaseModel baseModel1 = new BaseModel();
-        // Set the fit width and fit height to be a fraction of the cell size
-        double cellWidth1 = cell1.getMinWidth();
-        double cellHeight1 = cell1.getMinHeight();
-        baseModel1.getGifImageView().setFitWidth(cellWidth1 * 0.95); // Adjust the factor based on your preference
-        baseModel1.getGifImageView().setFitHeight(cellHeight1 * 0.95);
-        baseModel1.setPositionX(2);
-        baseModel1.setPositionY(2);
-        cell1.getChildren().add(baseModel1.getGifImageView());
-
-        Pane cell = movingHandler.getCell(gridPane, 5,5);
-
-        BaseModel baseModel = new BaseModel();
-        // Set the fit width and fit height to be a fraction of the cell size
-        double cellWidth = cell.getMinWidth();
-        double cellHeight = cell.getMinHeight();
-        baseModel.getGifImageView().setFitWidth(cellWidth * 0.95); // Adjust the factor based on your preference
-        baseModel.getGifImageView().setFitHeight(cellHeight * 0.95);
-        baseModel.setPositionX(5);
-        baseModel.setPositionY(5);
-
-        cell.getChildren().add(baseModel.getGifImageView());
-
 
 //Каси
         int currentCheckout = 0;
@@ -345,31 +323,33 @@ public class HelloApplication extends Application {
 
     public void CreateCustomer(int customerId, int checkoutId){
         createCustomerOnView(customerId, checkoutModels.get(checkoutId), baseModels.get(checkoutId),checkoutList.get(checkoutId));
+       // moveToWaitZone(customerId, baseModels.get(checkoutId).get(customerId));
     }
-    public void createCustomerOnView(Integer customerId, CheckoutModel checkoutModel,
-                                      List<BaseModel> baseModels, List<Integer> checkoutList){
 
-        int defaultCustRow =13;
-        int defaultCustCol=10;
+    public void createCustomerOnView(Integer customerId, CheckoutModel checkoutModel,
+                                      List<BaseModel> baseModels, List<Integer> checkoutList) {
+
+        int defaultCustRow = 13;
+        int defaultCustCol = 10;
         BaseModel baseModelTemp = new BaseModel();
         baseModelTemp.setId(customerId);
-        Pane customerCell1 =movingHandler.getCell(gridPane, defaultCustRow, defaultCustCol);
+        Pane customerCell1 = movingHandler.getCell(gridPane, defaultCustRow, defaultCustCol);
         baseModelTemp.getGifImageView().setFitWidth(cellWidth * 0.95); // Adjust the factor based on your preference
         baseModelTemp.getGifImageView().setFitHeight(cellHeight * 0.95);
         baseModelTemp.setPositionX(defaultCustRow);
         baseModelTemp.setPositionY(defaultCustCol);
         Platform.runLater(() -> {
-                    customerCell1.getChildren().add(baseModelTemp.getGifImageView());
-                    baseModels.add(baseModelTemp);
-                });
+            customerCell1.getChildren().add(baseModelTemp.getGifImageView());
+            baseModels.add(baseModelTemp);
+        });
 
         Thread thread2 = new Thread(() -> {
 
-                Boolean ok = false;
-                int j = 1;
-                Thread.currentThread().setName("thread1");
-                System.out.println("Hello, I'm thread for baseModel 1 ("  +
-                        "), thread name: " + Thread.currentThread().getName());
+            Boolean ok = false;
+            int j = 1;
+            Thread.currentThread().setName("thread1");
+            System.out.println("Hello, I'm thread for baseModel 1 (" +
+                    "), thread name: " + Thread.currentThread().getName());
             synchronized (this) {
                 for (int i = 0; i < checkoutList.size(); ++i) {
                     if (i == 0) continue;
@@ -381,22 +361,67 @@ public class HelloApplication extends Application {
                     }
                 }
 
-                }
-                final int j2 = j;
-                Platform.runLater(() -> {movingHandler.moveBaseModelTo(gridPane, baseModelTemp, checkoutModel.getPositionX(),
-                        checkoutModel.getPositionY() + j2);});
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-
+            }
+            final int j2 = j;
+            Platform.runLater(() -> {
+                movingHandler.moveBaseModelTo(gridPane, baseModelTemp, checkoutModel.getPositionX(),
+                        checkoutModel.getPositionY() + j2);
+                //customerMoveLatch.countDown();
+            });
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 
         });
         thread2.start();
     }
 
+////////////////////////////////////////////////////////////////////////////
 
+
+ public void moveToWaitZone(Integer customerId, int checkoutId){
+         Thread thread3 = new Thread(() -> {
+             try {
+                 Thread.sleep(3000);
+             } catch (InterruptedException e) {
+                 throw new RuntimeException(e);
+             }
+             Boolean ok = false;
+             BaseModel customer;
+             Thread.currentThread().setName("thread3");
+             System.out.println("Hello, I'm thread for customer (" + customerId +
+                     "), thread name: " + Thread.currentThread().getName());
+                 customer = baseModels.get(checkoutId).get(0);
+             int [] newPosition = findFreeCellInWaitzone(gridPane, 2, 9, 13, 13);
+             //Pane customerCell1 = movingHandler.getCell(gridPane, newPosition[0], newPosition[1]);
+             //customerCell1.getChildren().add(new ImageView());
+             Platform.runLater(() -> {
+                 movingHandler.moveBaseModelTo(gridPane, customer, newPosition[0], newPosition[1]);
+             });
+         });
+         thread3.start();
+ }
+
+ private void moveWhenFree(){
+        
+ }
+
+ private int[] findFreeCellInWaitzone(GridPane gridPane, int startRow, int startCol, int endRow, int endCol){
+     for (int row = startRow; row <= endRow; row++) {
+         for (int col = startCol; col <= endCol; col++) {
+             if (movingHandler.isCellFree(gridPane, row, col)) {
+                 return new int[]{row, col};
+             }
+         }
+     }
+     // No free cell found in the specified range
+     return null;
+ }
+
+
+////////////////////////////////////////////////////////////////////////////
     private Optional<Integer> showInputDialog() {
         Dialog<Integer> dialog = new Dialog<>();
         dialog.setTitle("Input Dialog");

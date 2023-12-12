@@ -36,11 +36,11 @@ public class Controller {
     }
 
     public void setCustomerIdAndCheckout(int customerId, int checkoutId){
-        helloApplication.CreateCustomer(customerId,checkoutId-1);
+        helloApplication.CreateCustomer(customerId-1,checkoutId-1);
     }
 
     public void movetowait(int customerId, int checkoutId){
-        helloApplication.moveToWaitZone(customerId-1, checkoutId-1);
+        helloApplication.moveToWaitZone(customerId, checkoutId);
     }
 
     public void startSimulation(){

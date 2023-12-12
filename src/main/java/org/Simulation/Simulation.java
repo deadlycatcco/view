@@ -233,7 +233,7 @@ public class Simulation {
                   kitchen.addOrderToQueue(customer.getOrder());
 
                   controller.setCustomerIdAndCheckout(customer.getId(), checkoutId);
-                  controller.movetowait(customer.getId(), checkoutId);
+                  controller.movetowait(customer.getId()-1, checkoutId-1);
 
               }
 

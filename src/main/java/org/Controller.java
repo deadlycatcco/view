@@ -16,6 +16,7 @@ public class Controller {
     public void setAmountOfCheckout(int amountOfCheckout){
         simulation.setAmountOfCheckouts(amountOfCheckout);
     }
+    public void setAmountOfCooks(int amountOfCooks){simulation.setAmountOfCooks(amountOfCooks);}
 
     public static void setSimulation(Simulation sim) {
         simulation = sim;
@@ -23,6 +24,8 @@ public class Controller {
     public static void letsGo() {
         int amountOfCheckouts = helloApplication.getAmtCheck();
         simulation.setAmountOfCheckouts(amountOfCheckouts);
+        int amountOfCooks = helloApplication.getAmtCooks();
+        simulation.setAmountOfCooks(amountOfCooks);
 
         // Execute GUI-related code on the JavaFX Application Thread
         Platform.runLater(() -> {
@@ -39,6 +42,9 @@ public class Controller {
         helloApplication.CreateCustomer(customerId,checkoutId-1);
     }
 
+    public void createCooks(){
+       helloApplication.CreateCook();
+    }
     public void movetowait(int customerId, int checkoutId){
         helloApplication.moveToWaitZone(customerId-1, checkoutId-1);
     }

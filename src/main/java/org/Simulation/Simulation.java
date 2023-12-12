@@ -39,10 +39,16 @@ public class Simulation {
         return pizzaRestaurant;
     }
     private static int amountOfCheckouts=0;
+    private static int amountOfCooks=0;
+
 
     public void setAmountOfCheckouts(int amt){
         amountOfCheckouts = amt;
     }
+    public void setAmountOfCooks(int amt){
+        amountOfCooks = amt;
+    }
+
     public void setCustomerId(int Id){
         amountOfCheckouts = Id;
     }
@@ -177,22 +183,33 @@ public class Simulation {
         CookList cookList=new CookList();
         ICookingStrategy cookingStrategy=new SingleCookingStrategy();
         cookList.setCookingStrategy(cookingStrategy);
+        System.out.println("AMOUNT OF COOKS FROM VIEW: " + amountOfCooks);
+      cookList.setCookingStrategy(cookingStrategy);
 
-        ICook cook1=new Cook();
-        cook1.setId(1);
-        ICook cook2=new Cook();
-        ICook cook3=new Cook();
-        ICook cook4=new Cook();
-        ICook cook5=new Cook();
-      cook2.setId(2);
-      cook3.setId(3);
-      cook4.setId(4);
-      cook5.setId(5);
-        cookList.addToList(cook1);
-        cookList.addToList(cook2);
-        cookList.addToList(cook3);
-        cookList.addToList(cook4);
-        cookList.addToList(cook5);
+      for(int i=0;i<amountOfCooks;++i){
+          ICook cook=new Cook();
+          cook.setId(i+1);
+          cookList.addToList(cook);
+      }
+      controller.createCooks();
+
+//        ICook cook1=new Cook();
+//        cook1.setId(1);
+//        ICook cook2=new Cook();
+//        ICook cook3=new Cook();
+//        ICook cook4=new Cook();
+//        ICook cook5=new Cook();
+//      cook2.setId(2);
+//      cook3.setId(3);
+//      cook4.setId(4);
+//      cook5.setId(5);
+//        cookList.addToList(cook1);
+//        cookList.addToList(cook2);
+//        cookList.addToList(cook3);
+//        cookList.addToList(cook4);
+//        cookList.addToList(cook5);
+
+       //cook1.getOrder().getProducts()
 
         kitchen.setCookList(cookList);
 

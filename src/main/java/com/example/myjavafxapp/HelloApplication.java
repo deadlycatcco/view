@@ -21,13 +21,14 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javafx.util.Pair;
 import org.Controller;
 import org.Simulation.Simulation;
 import static java.lang.Thread.sleep;
 
 public class HelloApplication extends Application {
-
-    private final CountDownLatch customerMoveLatch = new CountDownLatch(1);
+    private TextArea outputTextArea;
+    //private final CountDownLatch customerMoveLatch = new CountDownLatch(1);
     //private static final String IMAGE_URL = "https://images.squarespace-cdn.com/content/v1/551a19f8e4b0e8322a93850a/1566776697516-A69UYWW58V0871IQXG9C/Title_Image.png";
     //private static final String GIF_URL = "https://img.itch.zone/aW1nLzMzMzY4OTguZ2lm/original/0Ut41Y.gif";
     private static final String IMAGE_URL = "/Images/cafe.png";
@@ -36,6 +37,7 @@ public class HelloApplication extends Application {
     private Controller controller = new Controller();
 
     private final Object monitor = new Object();
+    private List<CookPoint> cookPoints = new ArrayList<>();
 
     private GridPane gridPane;
     private MovingHandler movingHandler = new MovingHandler(gridPane);
@@ -51,40 +53,40 @@ public class HelloApplication extends Application {
 //        return checkoutsAmt;
 //    }
     private int checkAmount = 0;
+    private  int cookAmount = 0;
     @Override
     public void start(Stage primaryStage) {
         // Show InputDialog to get K
         int k = -1;
-        InputDialog inputDialog = new InputDialog();
+        int c = -1;
 
-        while (k < 1 || k > 5) {
-            Optional<Integer> result = showInputDialog();
+        while (k < 1 || k > 5 || c < 1 || c > 5) {
+            Optional<Pair<Integer, Integer>> result = showInputDialog();
 
             if (result.isPresent()) {
                 try {
-                    k = result.get();
+                    Pair<Integer, Integer> values = result.get();
+                    k = values.getKey();
+                    c = values.getValue();
 
-                    if (k <  1 || k > 5) {
-                        // Show an alert for invalid input
-                        showAlert("Invalid Input", "K should be between 1 and 5");
+                    if (k < 1 || k > 5 || c < 1 || c > 5) {
+                        showAlert("Invalid Input", "K and C should be between 1 and 5");
                     }
                 } catch (NumberFormatException e) {
-                    // Show an alert for invalid number format
-                    showAlert("Invalid Input", "Please enter a valid number");
+                    showAlert("Invalid Input", "Please enter valid numbers for K and C");
                 }
             } else {
-                // User canceled the input, exit the application
                 System.exit(0);
             }
         }
 
-        // Continue with your program using the value of k
         try {
             checkAmount = k;
-             setupPrimaryStage(primaryStage, k);
+            cookAmount = c;
+            setupPrimaryStage(primaryStage, k, c);
             controller.setAmountOfCheckout(k);
-            System.out.println("Received K: " + k);
-
+           // controller.setCValue(c);
+            System.out.println("Received K: " + k + ", C: " + c);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -92,7 +94,7 @@ public class HelloApplication extends Application {
     }
 
 
-    public void setupPrimaryStage(Stage primaryStage, int kValue) throws InterruptedException {
+    public void setupPrimaryStage(Stage primaryStage, int kValue, int cValue) throws InterruptedException {
         primaryStage.setTitle("PizzaRestaurant");
 
         Image backgroundImage = new Image(getClass().getResource(IMAGE_URL).toExternalForm());
@@ -154,7 +156,6 @@ public class HelloApplication extends Application {
 //Пойнти
         //int currentCookingPoint = 3;
         int cookingPointsAmt = 5;
-        List<CookPoint> cookPoints = new ArrayList<>();
 
         int positionCP = 2;
         for(int i = 1; i <= cookingPointsAmt; i++){
@@ -176,77 +177,77 @@ public class HelloApplication extends Application {
         }
 
 
-        int AmountOfCooks = 3;
-        int tempAmountOfCooks = AmountOfCooks;
-        int defaultRow = 1, defaultCol = 15;
-        List<CookModel> cookModels = new ArrayList<>();
-        final int finalTempAmount = tempAmountOfCooks;
-
-        List<Integer> cookPointsStatus = new ArrayList<>();
-        for(int i = 0; i < cookingPointsAmt; i++){
-            cookPointsStatus.add(0);
-        }
-
-        while (tempAmountOfCooks != 0) {
-
-            CookModel cookModelTemp = new CookModel();
-            Pane cookCell1 = movingHandler.getCell(gridPane, defaultRow, defaultCol);
-            cookModelTemp.getGifImageView().setFitWidth(cellWidth * 0.95);
-            cookModelTemp.getGifImageView().setFitHeight(cellHeight * 0.95);
-            cookModelTemp.setPositionX(defaultRow);
-            cookModelTemp.setPositionY(defaultCol);
-            cookCell1.getChildren().add(cookModelTemp.getGifImageView());
-            cookModels.add(cookModelTemp);
-
-            Thread thread1 = new Thread(() -> {
-               // synchronized (this) {
-                    Boolean ok = false;
-                     int j = 1;
-                    Thread.currentThread().setName("thread1");
-                    System.out.println("Hello, I'm thread for baseModel 1 (" + (AmountOfCooks - finalTempAmount) +
-                            "), thread name: " + Thread.currentThread().getName());
-                    //synchronized (this) {
-                        while (true) {
-
-                            int cu = cookModelTemp.currentPoint;
-                            synchronized (this) {
-                            if (cookPointsStatus.get(cu) != 1) {
-
-                                    if (cu != 0) {
-                                        synchronized (monitor) {
-                                            cookPointsStatus.set(cu - 1, 0);
-                                        }
-                                    }
-                                    Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cookModelTemp, cookPoints.get(cu).getPositionX(),
-                                            cookPoints.get(cu).getPositionY() - 2));
-                                    cookModelTemp.currentPoint++;
-                                    cookPointsStatus.set(cu, 1);
-                                } else{
-                                    continue;
-                                }
-                            }
-
-                            try {
-                                Thread.sleep(3000);
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            }
-
-                            if (cookModelTemp.currentPoint > 4) {
-                                cookPointsStatus.set(cu, 0);
-//                        Platform.runLater(()->movingHandler.moveCookModelTo(gridPane, cookModelTemp, cookPoints.get(cu).getPositionX(),
-//                                cookPoints.get(cu).getPositionY()-2));
-                                Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cookModelTemp, defaultRow,
-                                        defaultCol));
-                                break;
-                            }
-                        }
-                    //}
-            });
-            tempAmountOfCooks--;
-
-            thread1.start();
-        }
+//        int AmountOfCooks = cValue;
+//        int tempAmountOfCooks = AmountOfCooks;
+//        int defaultRow = 1, defaultCol = 15;
+//        List<CookModel> cookModels = new ArrayList<>();
+//        final int finalTempAmount = tempAmountOfCooks;
+//
+//        List<Integer> cookPointsStatus = new ArrayList<>();
+//        for(int i = 0; i < cookingPointsAmt; i++){
+//            cookPointsStatus.add(0);
+//        }
+//
+//        while (tempAmountOfCooks != 0) {
+//
+//            CookModel cookModelTemp = new CookModel();
+//            Pane cookCell1 = movingHandler.getCell(gridPane, defaultRow, defaultCol);
+//            cookModelTemp.getGifImageView().setFitWidth(cellWidth * 0.95);
+//            cookModelTemp.getGifImageView().setFitHeight(cellHeight * 0.95);
+//            cookModelTemp.setPositionX(defaultRow);
+//            cookModelTemp.setPositionY(defaultCol);
+//            cookCell1.getChildren().add(cookModelTemp.getGifImageView());
+//            cookModels.add(cookModelTemp);
+//
+//            Thread thread1 = new Thread(() -> {
+//               // synchronized (this) {
+//                    Boolean ok = false;
+//                     int j = 1;
+//                    Thread.currentThread().setName("thread1");
+//                    System.out.println("Hello, I'm thread for baseModel 1 (" + (AmountOfCooks - finalTempAmount) +
+//                            "), thread name: " + Thread.currentThread().getName());
+//                    //synchronized (this) {
+//                        while (true) {
+//
+//                            int cu = cookModelTemp.currentPoint;
+//                            synchronized (this) {
+//                            if (cookPointsStatus.get(cu) != 1) {
+//
+//                                    if (cu != 0) {
+//                                        synchronized (monitor) {
+//                                            cookPointsStatus.set(cu - 1, 0);
+//                                        }
+//                                    }
+//                                    Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cookModelTemp, cookPoints.get(cu).getPositionX(),
+//                                            cookPoints.get(cu).getPositionY() - 2));
+//                                    cookModelTemp.currentPoint++;
+//                                    cookPointsStatus.set(cu, 1);
+//                                } else{
+//                                    continue;
+//                                }
+//                            }
+//
+//                            try {
+//                                Thread.sleep(3000);
+//                            } catch (InterruptedException e) {
+//                                throw new RuntimeException(e);
+//                            }
+//
+//                            if (cookModelTemp.currentPoint > 4) {
+//                                cookPointsStatus.set(cu, 0);
+////                        Platform.runLater(()->movingHandler.moveCookModelTo(gridPane, cookModelTemp, cookPoints.get(cu).getPositionX(),
+////                                cookPoints.get(cu).getPositionY()-2));
+//                                Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cookModelTemp, defaultRow,
+//                                        defaultCol));
+//                                break;
+//                            }
+//                        }
+//                    //}
+//            });
+//            tempAmountOfCooks--;
+//
+//            thread1.start();
+//        }
 
 //кастомери
         int AmountOfCustomers = 3;
@@ -320,6 +321,7 @@ public class HelloApplication extends Application {
     public int getAmtCheck(){
         return checkAmount;
     }
+    public int getAmtCooks(){return cookAmount;}
 
     public void CreateCustomer(int customerId, int checkoutId){
         createCustomerOnView(customerId, checkoutModels.get(checkoutId), baseModels.get(checkoutId),checkoutList.get(checkoutId));
@@ -404,9 +406,6 @@ public class HelloApplication extends Application {
          thread3.start();
  }
 
- private void moveWhenFree(){
-        
- }
 
  private int[] findFreeCellInWaitzone(GridPane gridPane, int startRow, int startCol, int endRow, int endCol){
      for (int row = startRow; row <= endRow; row++) {
@@ -421,11 +420,93 @@ public class HelloApplication extends Application {
  }
 
 
+
+    public void CreateCook(){
+        createCookOnView();
+    }
+
+    public void createCookOnView() {
+        int AmountOfCooks = cookAmount;
+        int tempAmountOfCooks = AmountOfCooks;
+        int defaultRow = 1, defaultCol = 15;
+        List<CookModel> cookModels = new ArrayList<>();
+        final int finalTempAmount = tempAmountOfCooks;
+        int cookingPointsAmt = 5;
+        List<Integer> cookPointsStatus = new ArrayList<>();
+        for(int i = 0; i < cookingPointsAmt; i++){
+            cookPointsStatus.add(0);
+        }
+
+        while (tempAmountOfCooks != 0) {
+            CookModel cookModelTemp = new CookModel();
+            Pane cookCell1 = movingHandler.getCell(gridPane, defaultRow, defaultCol);
+            cookModelTemp.getGifImageView().setFitWidth(cellWidth * 0.95);
+            cookModelTemp.getGifImageView().setFitHeight(cellHeight * 0.95);
+            cookModelTemp.setPositionX(defaultRow);
+            cookModelTemp.setPositionY(defaultCol);
+            cookModelTemp.id = 6 - tempAmountOfCooks;
+            cookCell1.getChildren().add(cookModelTemp.getGifImageView());
+            cookModels.add(cookModelTemp);
+
+            Thread thread1 = new Thread(() -> {
+
+                Thread.currentThread().setName("thread1");
+                System.out.println("Hello, I'm thread for baseModel 1 (" + (AmountOfCooks - finalTempAmount) +
+                        "), thread name: " + Thread.currentThread().getName());
+
+                while (true) {
+                    for (int cu = 0; cu < cookPoints.size(); cu++) {
+                        final int currentCu = cu;
+
+                        synchronized (monitor) {
+                            if (cookPointsStatus.get(currentCu) != 1) {
+                                if (currentCu != 0) {
+                                    cookPointsStatus.set(currentCu - 1, 0);
+                                }
+                                Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cookModelTemp, cookPoints.get(currentCu).getPositionX(),
+                                        cookPoints.get(currentCu).getPositionY() - 1));
+                                cookModelTemp.currentPoint = currentCu + 1;
+                                cookPointsStatus.set(currentCu, 1);
+                            } else {
+                                continue;
+                            }
+                        }
+                        cookModelTemp.currentPoint = 0;
+
+                        try {
+                            Thread.sleep(4000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                    // Reset the currentPoint to 0 when it reaches the last cook point
+                }
+            });
+            tempAmountOfCooks--;
+
+            thread1.start();
+        }
+    }
+
+
+    private void moveCookToDough(CookModel cook){
+      CookPoint doughTable = cookPoints.get(0);
+        Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cook, doughTable.getPositionX(),
+                doughTable.getPositionY()-1));
+    }
+    private void moveCookToSauce(CookModel cook){
+        CookPoint sauceTable = cookPoints.get(1);
+        Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cook, sauceTable.getPositionX(),
+                sauceTable.getPositionY()-1));
+    }
+
+
 ////////////////////////////////////////////////////////////////////////////
-    private Optional<Integer> showInputDialog() {
-        Dialog<Integer> dialog = new Dialog<>();
-        dialog.setTitle("Input Dialog");
-        dialog.setHeaderText("Enter K:");
+    private Optional<Pair<Integer, Integer>> showInputDialog() {
+    Dialog<Pair<Integer, Integer>> dialog = new Dialog<>();
+    dialog.setTitle("Input Dialog");
+    dialog.setHeaderText("Enter K and C:");
 
         // Set the icon (if you have one)
         // dialog.setGraphic(new ImageView(this.getClass().getResource("icon.png").toString()));
@@ -446,13 +527,22 @@ public class HelloApplication extends Application {
         grid.add(new Label("K:"), 0, 0);
         grid.add(kField, 1, 0);
 
+        TextField cField = new TextField();
+        cField.setPromptText("C");
+
+        grid.add(new Label("C:"), 0, 1);
+        grid.add(cField, 1, 1);
+
         // Enable/Disable login button depending on whether a K was entered
         Node enterButton = dialog.getDialogPane().lookupButton(enterButtonType);
         enterButton.setDisable(true);
 
         // Do some validation (using the Java 8 lambda syntax)
         kField.textProperty().addListener((observable, oldValue, newValue) -> {
-            enterButton.setDisable(newValue.trim().isEmpty());
+            enterButton.setDisable(newValue.trim().isEmpty() || cField.getText().trim().isEmpty());
+        });
+        cField.textProperty().addListener((observable, oldValue, newValue) -> {
+            enterButton.setDisable(newValue.trim().isEmpty() || kField.getText().trim().isEmpty());
         });
 
         dialog.getDialogPane().setContent(grid);
@@ -463,7 +553,13 @@ public class HelloApplication extends Application {
         // Convert the result to a K value when the login button is clicked
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == enterButtonType) {
-                return Integer.parseInt(kField.getText());
+                try {
+                    int k = Integer.parseInt(kField.getText());
+                    int c = Integer.parseInt(cField.getText());
+                    return new Pair<>(k, c);
+                } catch (NumberFormatException e) {
+                    showAlert("Invalid Input", "Please enter valid numbers for K and C");
+                }
             }
             return null;
         });
@@ -480,14 +576,3 @@ public class HelloApplication extends Application {
     }
 
 }
-
-
-
-
-
-/*
-
-    - перебір кас якщо заповнена, якщо всі заповнені то кастомери не генеруються
-    - йде з каси через якийсь час в зону очікування
-    - точки на кухні, рух куків по кухні
-*/

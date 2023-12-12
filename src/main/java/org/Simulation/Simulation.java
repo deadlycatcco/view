@@ -226,13 +226,13 @@ public class Simulation {
           while(true) {
               if(ch.get(2).getCustomersCount()<=2) {
                   Customer customer = customerGenerator.generateCustomer();
-
                   System.out.println(customer);
                   customers.add(customer);
-                  controller.setCustomerId(customer.getId());
                   orderBoard.addCustomer(customer);
-                  customerManager.sendCustomerToCheckout(customer);
+                  int checkoutId = customerManager.sendCustomerToCheckout(customer);
                   kitchen.addOrderToQueue(customer.getOrder());
+
+                  controller.setCustomerIdAndCheckout(customer.getId(), checkoutId);
               }
 
 

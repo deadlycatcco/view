@@ -35,8 +35,8 @@ public class Controller {
         });
     }
 
-    public void setCustomerId(int customerId){
-
+    public void setCustomerIdAndCheckout(int customerId, int checkoutId){
+        helloApplication.CreateCustomer(customerId,checkoutId-1);
     }
 
     public void startSimulation(){

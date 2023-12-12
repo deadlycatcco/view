@@ -17,7 +17,7 @@ public class CustomerManager {
                 .orElse(null);
     }
 
-    public void sendCustomerToCheckout(Customer customer){
+    public int sendCustomerToCheckout(Customer customer){
 
         Checkout ch=findBestCheckoutQueue();
 
@@ -28,5 +28,6 @@ public class CustomerManager {
             }
         }
         System.out.println("кастомер пішов до каси "+ ch.getId()+", к-сть кастомерів: "+ch.getCustomersCount());
+        return ch.getId();
     }
 }

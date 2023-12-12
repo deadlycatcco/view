@@ -276,22 +276,22 @@ public class HelloApplication extends Application {
         int defaultCustRow = 6;
         int defaultCustCol = 4;
          baseModels = new ArrayList<>();
-         for(int i = 0; i < cookingPointsAmt; i++){
+         for(int i = 0; i < checkAmount; i++){
              baseModels.add(new ArrayList<>());
          }
         final int finalCustTempAmount = tempAmount;
          checkoutList = new ArrayList<>();
-         for(int i = 0; i < cookingPointsAmt; i++){
+         for(int i = 0; i < checkAmount; i++){
              checkoutList.add(new ArrayList<>(Collections.nCopies(8, 1)));
-             checkoutList.get(0).set(0.0);
+             checkoutList.get(i).set(0,0);
          }
 
 
-        while (tempAmount != 0) {
-
-            createCustomerOnView(tempAmount, checkoutModels.get(currentCheckout), baseModels.get(currentCheckout), checkoutList.get(currentCheckout));
-            tempAmount--;
-        }
+//        while (tempAmount != 0) {
+//
+//            createCustomerOnView(tempAmount, checkoutModels.get(currentCheckout), baseModels.get(currentCheckout), checkoutList.get(currentCheckout));
+//            tempAmount--;
+//        }
 
 //це щоб генерувати куків один біля одного в залежності від кількості куків, але це все дуже приблизно
 
@@ -344,13 +344,13 @@ public class HelloApplication extends Application {
     }
 
     public void CreateCustomer(int customerId, int checkoutId){
-        createCustomerOnView(customerId, checkoutModels.get(checkoutId), baseModels.get(checkoutId),checkout0List);
+        createCustomerOnView(customerId, checkoutModels.get(checkoutId), baseModels.get(checkoutId),checkoutList.get(checkoutId));
     }
     public void createCustomerOnView(Integer customerId, CheckoutModel checkoutModel,
                                       List<BaseModel> baseModels, List<Integer> checkoutList){
 
-        int defaultCustRow =6;
-        int defaultCustCol=4;
+        int defaultCustRow =13;
+        int defaultCustCol=10;
         BaseModel baseModelTemp = new BaseModel();
         baseModelTemp.setId(customerId);
         Pane customerCell1 =movingHandler.getCell(gridPane, defaultCustRow, defaultCustCol);
@@ -358,8 +358,10 @@ public class HelloApplication extends Application {
         baseModelTemp.getGifImageView().setFitHeight(cellHeight * 0.95);
         baseModelTemp.setPositionX(defaultCustRow);
         baseModelTemp.setPositionY(defaultCustCol);
-        customerCell1.getChildren().add(baseModelTemp.getGifImageView());
-        baseModels.add(baseModelTemp);
+        Platform.runLater(() -> {
+                    customerCell1.getChildren().add(baseModelTemp.getGifImageView());
+                    baseModels.add(baseModelTemp);
+                });
 
         Thread thread2 = new Thread(() -> {
 
@@ -381,8 +383,8 @@ public class HelloApplication extends Application {
 
                 }
                 final int j2 = j;
-                Platform.runLater(() -> movingHandler.moveBaseModelTo(gridPane, baseModelTemp, checkoutModel.getPositionX(),
-                        checkoutModel.getPositionY() + j2));
+                Platform.runLater(() -> {movingHandler.moveBaseModelTo(gridPane, baseModelTemp, checkoutModel.getPositionX(),
+                        checkoutModel.getPositionY() + j2);});
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
@@ -391,7 +393,6 @@ public class HelloApplication extends Application {
 
 
         });
-        --customerId;
         thread2.start();
     }
 

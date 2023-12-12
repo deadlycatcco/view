@@ -39,13 +39,15 @@ public class HelloApplication extends Application {
 
     private double cellWidth = 40; // Adjust the size of each cell
     private double cellHeight = 40; // Adjust the size of each cell
-
+    List<CheckoutModel> checkoutModels;
+    List<List<BaseModel>> baseModels;
+    List<List<Integer>> checkoutList;
     //private static int checkoutsAmt;
 
 //    public static int getCheckoutsAmt() {
 //        return checkoutsAmt;
 //    }
-
+    private int checkAmount = 0;
     @Override
     public void start(Stage primaryStage) {
         // Show InputDialog to get K
@@ -75,12 +77,15 @@ public class HelloApplication extends Application {
 
         // Continue with your program using the value of k
         try {
-            setupPrimaryStage(primaryStage, k);
+            checkAmount = k;
+             setupPrimaryStage(primaryStage, k);
+            controller.setAmountOfCheckout(k);
             System.out.println("Received K: " + k);
-            // Now you can proceed to set up your primaryStage and other parts of your application
+
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        controller.startSimulation();
     }
 
 
@@ -149,9 +154,9 @@ public class HelloApplication extends Application {
 
 
 //Каси
-        int currentCheckout = 3;
+        int currentCheckout = 0;
        // int checkoutsAmt = 5;
-        List<CheckoutModel> checkoutModels = new ArrayList<>();
+         checkoutModels = new ArrayList<>();
 
         int position = 2;
         for(int i = 1; i <= checkoutsAmt; i++){
@@ -168,7 +173,7 @@ public class HelloApplication extends Application {
             checkoutCell.getChildren().add(checkoutModel.getGifImageView());
             position+= 2;
         }
-
+//Пойнти
         //int currentCookingPoint = 3;
         int cookingPointsAmt = 5;
         List<CookPoint> cookPoints = new ArrayList<>();
@@ -176,6 +181,9 @@ public class HelloApplication extends Application {
         int positionCP = 2;
         for(int i = 1; i <= cookingPointsAmt; i++){
             CookPoint cookingPoint = new CookPoint();
+            String imageUrl = "/Images/cookingPoint_%d.png";
+            cookingPoint.setGif_url(imageUrl, i);
+            System.out.println(imageUrl);
             cookingPoint.setPositionX(positionCP);
             cookingPoint.setPositionY(gridPane.getColumnCount()-1);
             cookPoints.add(cookingPoint);
@@ -190,7 +198,7 @@ public class HelloApplication extends Application {
         }
 
 
-        int AmountOfCooks = 1;
+        int AmountOfCooks = 3;
         int tempAmountOfCooks = AmountOfCooks;
         int defaultRow = 1, defaultCol = 15;
         List<CookModel> cookModels = new ArrayList<>();
@@ -212,7 +220,6 @@ public class HelloApplication extends Application {
             cookCell1.getChildren().add(cookModelTemp.getGifImageView());
             cookModels.add(cookModelTemp);
 
-
             Thread thread1 = new Thread(() -> {
                // synchronized (this) {
                     Boolean ok = false;
@@ -220,24 +227,25 @@ public class HelloApplication extends Application {
                     Thread.currentThread().setName("thread1");
                     System.out.println("Hello, I'm thread for baseModel 1 (" + (AmountOfCooks - finalTempAmount) +
                             "), thread name: " + Thread.currentThread().getName());
-                    synchronized (this) {
+                    //synchronized (this) {
                         while (true) {
 
                             int cu = cookModelTemp.currentPoint;
-
+                            synchronized (this) {
                             if (cookPointsStatus.get(cu) != 1) {
 
-                                if (cu != 0) {
-                                    synchronized (monitor) {
-                                        cookPointsStatus.set(cu - 1, 0);
+                                    if (cu != 0) {
+                                        synchronized (monitor) {
+                                            cookPointsStatus.set(cu - 1, 0);
+                                        }
                                     }
+                                    Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cookModelTemp, cookPoints.get(cu).getPositionX(),
+                                            cookPoints.get(cu).getPositionY() - 2));
+                                    cookModelTemp.currentPoint++;
+                                    cookPointsStatus.set(cu, 1);
+                                } else{
+                                    continue;
                                 }
-                                Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cookModelTemp, cookPoints.get(cu).getPositionX(),
-                                        cookPoints.get(cu).getPositionY() - 1));
-                                cookModelTemp.currentPoint++;
-                                cookPointsStatus.set(cu, 1);
-                            } else {
-                                continue;
                             }
 
                             try {
@@ -255,62 +263,35 @@ public class HelloApplication extends Application {
                                 break;
                             }
                         }
-                    }
+                    //}
             });
             tempAmountOfCooks--;
+
             thread1.start();
         }
 
 //кастомери
-//        int AmountOfCustomers = 3;
-//        int tempAmount = AmountOfCustomers;
-//        int defaultRow = 6, defaultCol = 4;
-//        List<BaseModel> baseModels = new ArrayList<>();
-//        final int finalTempAmount = tempAmount;
-//        List<Integer> checkout0List = new ArrayList<>(Collections.nCopies(8, 1));
-//
-//        checkout0List.set(0, 0);
-//        while (tempAmount != 0) {
-//
-//            //Розміщую кастомера на дефолтну клітинку
-//            BaseModel baseModelTemp = new BaseModel();
-//            Pane customerCell1 =movingHandler.getCell(gridPane, defaultRow, defaultCol);
-//            baseModelTemp.getGifImageView().setFitWidth(cellWidth * 0.95); // Adjust the factor based on your preference
-//            baseModelTemp.getGifImageView().setFitHeight(cellHeight * 0.95);
-//            baseModelTemp.setPositionX(defaultRow);
-//            baseModelTemp.setPositionY(defaultCol);
-//            customerCell1.getChildren().add(baseModelTemp.getGifImageView());
-//            baseModels.add(baseModelTemp);
-//
-//            Thread thread1 = new Thread(() -> {
-//                synchronized (monitor) {
-//                    Boolean ok = false;
-//                    int j = 1;
-//                    Thread.currentThread().setName("thread1");
-//                    System.out.println("Hello, I'm thread for baseModel 1 (" + (AmountOfCustomers - finalTempAmount) +
-//                            "), thread name: " + Thread.currentThread().getName());
-//                    for (int i = 0; i < checkout0List.size(); ++i) {
-//                        if(i == 0) continue;
-//                        if(checkout0List.get(i) == 0 ){
-//                            j++;
-//                        }
-//                        else {
-//                            checkout0List.set(j, 0);
-//                            break;}
-//                    }
-//                    final int j2 = j;
-//                    Platform.runLater(()->movingHandler.moveBaseModelTo(gridPane, baseModelTemp, checkoutModels.get(currentCheckout).getPositionX(),
-//                            checkoutModels.get(currentCheckout).getPositionY()+j2));
-//                    try {
-//                        sleep(1000);
-//                    } catch (InterruptedException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                }
-//            });
-//            tempAmount--;
-//            thread1.start();
-//        }
+        int AmountOfCustomers = 3;
+        Integer tempAmount = AmountOfCustomers;
+        int defaultCustRow = 6;
+        int defaultCustCol = 4;
+         baseModels = new ArrayList<>();
+         for(int i = 0; i < cookingPointsAmt; i++){
+             baseModels.add(new ArrayList<>());
+         }
+        final int finalCustTempAmount = tempAmount;
+         checkoutList = new ArrayList<>();
+         for(int i = 0; i < cookingPointsAmt; i++){
+             checkoutList.add(new ArrayList<>(Collections.nCopies(8, 1)));
+             checkoutList.get(0).set(0.0);
+         }
+
+
+        while (tempAmount != 0) {
+
+            createCustomerOnView(tempAmount, checkoutModels.get(currentCheckout), baseModels.get(currentCheckout), checkoutList.get(currentCheckout));
+            tempAmount--;
+        }
 
 //це щоб генерувати куків один біля одного в залежності від кількості куків, але це все дуже приблизно
 
@@ -339,6 +320,11 @@ public class HelloApplication extends Application {
         primaryStage.setHeight(cellHeight * (GRID_ROWS+1));
         primaryStage.setWidth(cellWidth * (GRID_COLUMNS+0.5));
         primaryStage.show();
+
+        Controller.setHelloApplication(this);
+        Controller.setSimulation(new Simulation());
+
+        Controller.letsGo();
     }
 
 //    public static void setCheckoutAmount(int checkoutAmount) {
@@ -348,9 +334,68 @@ public class HelloApplication extends Application {
 //    }
 
     public static void main(String[] args) {
-        Simulation.YULIIA_TEST_CODE();
         launch(args);
+//        Simulation.TEST_START_PROGRAM();
+//       Application.launch(HelloApplication.class, args);
     }
+
+    public int getAmtCheck(){
+        return checkAmount;
+    }
+
+    public void CreateCustomer(int customerId, int checkoutId){
+        createCustomerOnView(customerId, checkoutModels.get(checkoutId), baseModels.get(checkoutId),checkout0List);
+    }
+    public void createCustomerOnView(Integer customerId, CheckoutModel checkoutModel,
+                                      List<BaseModel> baseModels, List<Integer> checkoutList){
+
+        int defaultCustRow =6;
+        int defaultCustCol=4;
+        BaseModel baseModelTemp = new BaseModel();
+        baseModelTemp.setId(customerId);
+        Pane customerCell1 =movingHandler.getCell(gridPane, defaultCustRow, defaultCustCol);
+        baseModelTemp.getGifImageView().setFitWidth(cellWidth * 0.95); // Adjust the factor based on your preference
+        baseModelTemp.getGifImageView().setFitHeight(cellHeight * 0.95);
+        baseModelTemp.setPositionX(defaultCustRow);
+        baseModelTemp.setPositionY(defaultCustCol);
+        customerCell1.getChildren().add(baseModelTemp.getGifImageView());
+        baseModels.add(baseModelTemp);
+
+        Thread thread2 = new Thread(() -> {
+
+                Boolean ok = false;
+                int j = 1;
+                Thread.currentThread().setName("thread1");
+                System.out.println("Hello, I'm thread for baseModel 1 ("  +
+                        "), thread name: " + Thread.currentThread().getName());
+            synchronized (this) {
+                for (int i = 0; i < checkoutList.size(); ++i) {
+                    if (i == 0) continue;
+                    if (checkoutList.get(i) == 0) {
+                        j++;
+                    } else {
+                        checkoutList.set(j, 0);
+                        break;
+                    }
+                }
+
+                }
+                final int j2 = j;
+                Platform.runLater(() -> movingHandler.moveBaseModelTo(gridPane, baseModelTemp, checkoutModel.getPositionX(),
+                        checkoutModel.getPositionY() + j2));
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+
+        });
+        --customerId;
+        thread2.start();
+    }
+
+
     private Optional<Integer> showInputDialog() {
         Dialog<Integer> dialog = new Dialog<>();
         dialog.setTitle("Input Dialog");

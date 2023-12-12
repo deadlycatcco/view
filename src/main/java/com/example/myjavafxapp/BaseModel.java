@@ -9,11 +9,13 @@ public class BaseModel {
     private String Gif_url ="/Images/customer1.png";
     private Image gifImage;
     private ImageView gifImageView;
+    private int id;
 
     private int positionX;
     private int positionY;
 
     public BaseModel(){
+        int id = -1;
         this.positionY = 0;
         this.positionX = 0;
         this.gifImage = new Image(getClass().getResource(Gif_url).toExternalForm());
@@ -54,5 +56,10 @@ public class BaseModel {
     public void setPositionY(int positionY) {
         this.positionY = positionY;
     }
-
+    public int getId(){
+        return this.id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
 }

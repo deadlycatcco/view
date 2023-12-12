@@ -84,7 +84,7 @@ public class MovingHandler {
         }
 
 
-        TranslateTransition transition = new TranslateTransition(Duration.seconds(3), baseModel.getGifImageView());
+        TranslateTransition transition = new TranslateTransition(Duration.seconds(2), baseModel.getGifImageView());
         transition.setToX(newTranslateX);
         transition.setToY(newTranslateY);
         transition.play();

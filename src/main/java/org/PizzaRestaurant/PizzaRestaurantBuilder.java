@@ -10,6 +10,9 @@ public class PizzaRestaurantBuilder implements IBuilder{
     private OrderBoard orderBoard;
     private RestaurantSize restaurantSize;
 
+    public PizzaRestaurantBuilder(){
+        this.restaurantSize = new RestaurantSize(50, 50);
+    }
 
     public void setRoomSize(int n, int m) {
         restaurantSize.setHeight(n);

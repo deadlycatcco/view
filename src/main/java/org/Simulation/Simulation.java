@@ -3,6 +3,7 @@ package org.Simulation;
 import org.Checkout.Checkout;
 import org.Checkout.CheckoutList;
 import org.Checkout.PickUpPoint;
+import org.Controller;
 import org.Cooks.Cook;
 import org.Cooks.CookList;
 import org.Cooks.CookingStrategy.ICookingStrategy;
@@ -24,6 +25,8 @@ import java.util.List;
 import java.util.Queue;
 
 public class Simulation {
+
+
     private PizzaRestaurant pizzaRestaurant;
     private static final Object lock2 = new Object();
     public PizzaRestaurant init() {
@@ -34,6 +37,14 @@ public class Simulation {
         // Додаткові дії для ініціалізації, якщо потрібно
 
         return pizzaRestaurant;
+    }
+    private static int amountOfCheckouts=0;
+
+    public void setAmountOfCheckouts(int amt){
+        amountOfCheckouts = amt;
+    }
+    public void setCustomerId(int Id){
+        amountOfCheckouts = Id;
     }
     public void runSimulation() {
         if (pizzaRestaurant == null) {
@@ -160,7 +171,7 @@ public class Simulation {
     }
 
   static  public void TEST_START_PROGRAM(){
-
+      Controller controller = new Controller();
         //куки
       Kitchen kitchen=new Kitchen();
         CookList cookList=new CookList();
@@ -189,17 +200,15 @@ public class Simulation {
 
         PickUpPoint pickUpPoint=new PickUpPoint();
 
-        Checkout checkout1=new Checkout(kitchen,pickUpPoint);
-        checkout1.setId(1);
-       Checkout checkout2=new Checkout(kitchen,pickUpPoint);
-        checkout2.setId(2);
-        Checkout checkout3=new Checkout(kitchen,pickUpPoint);
-        checkout3.setId(3);
-
+       // amountOfCheckouts = controller.getAmountOfCheckout();
+      System.out.println("AMOUNT OF CHECKOUTS FROM VIEW: " + amountOfCheckouts);
         List<Checkout> ch=new ArrayList<>();
-        ch.add(checkout1);
-        ch.add(checkout2);
-        ch.add(checkout3);
+        for(int i = 1; i <= amountOfCheckouts; i++) {
+            Checkout checkout = new Checkout(kitchen, pickUpPoint);
+            checkout.setId(i);
+            ch.add(checkout);
+        }
+
 
         CheckoutList checkoutList=new CheckoutList(ch);
 
@@ -215,10 +224,12 @@ public class Simulation {
       Thread CustomerGenerator = new Thread(()->{
           synchronized (lock2) {
           while(true) {
-              if(checkout3.getCustomersCount()<=2) {
+              if(ch.get(2).getCustomersCount()<=2) {
                   Customer customer = customerGenerator.generateCustomer();
+
                   System.out.println(customer);
                   customers.add(customer);
+                  controller.setCustomerId(customer.getId());
                   orderBoard.addCustomer(customer);
                   customerManager.sendCustomerToCheckout(customer);
                   kitchen.addOrderToQueue(customer.getOrder());
@@ -233,19 +244,7 @@ public class Simulation {
       }) ;
     CustomerGenerator.start();
         //кастомер менеджер
-
-
-
-
-
       kitchen.assignOrder();
-
-
-
-
-
-
-
 
     }
 

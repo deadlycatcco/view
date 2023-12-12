@@ -1,7 +1,7 @@
 package org.Cooks;
-
+import org.Checkout.PickUpPoint;
 import org.Cooks.CookingStrategy.ICookingStrategy;
-import org.order.Order;
+import org.order.*;
 public interface ICook {
 
     public void addOrder(Order order);
@@ -16,5 +16,6 @@ public interface ICook {
     public void setId(int id);
     public int getId() ;
     public void reGiveOrder(Cook cook);
+    public void setPickUpPoint(PickUpPoint pickUpPoint);
 
 }

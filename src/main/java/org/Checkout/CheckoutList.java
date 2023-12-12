@@ -12,16 +12,12 @@ public class CheckoutList {
     PickUpPoint pickUpPoint;
     Thread pickUpPointThread;
 
-    public CheckoutList(List<Checkout> checkouts) {
+    public CheckoutList(List<Checkout> checkouts, PickUpPoint pickUpPoint) {
         this.checkouts = checkouts;
         checkoutsThreads = new ArrayList<>();
-        pickUpPoint=new PickUpPoint();
+        this.pickUpPoint=pickUpPoint;
     }
-    public CheckoutList(int numberCheckouts, Kitchen kitchen){
-        pickUpPoint=new PickUpPoint();
-        createCheckouts(numberCheckouts,kitchen);
-        checkoutsThreads=new ArrayList<>();
-    }
+
     public void addToList(Checkout checkout) {
         checkouts.add(checkout);
     }
@@ -63,5 +59,9 @@ public class CheckoutList {
             checkouts1.add(new Checkout(kitchen,pickUpPoint));
         }
         return checkouts1;
+    }
+
+    public PickUpPoint getPickUpPoint() {
+        return pickUpPoint;
     }
 }

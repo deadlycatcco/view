@@ -42,6 +42,10 @@ public class Controller {
         helloApplication.CreateCustomer(customerId-1,checkoutId-1);
     }
 
+    public void setStrategy(String strategy){
+        simulation.setChosenStrategy(strategy);
+    }
+
     public void createCooks(){
        helloApplication.CreateCook();
     }

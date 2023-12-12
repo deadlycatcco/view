@@ -10,6 +10,7 @@ public class Pizza extends AbstractProduct{
         currentCookingStage = PizzaCookingStage.START;
 
     }
+    public Pizza(){super();}
    public PizzaCookingStage whichStepToDo() {
        return currentCookingStage;
    }

@@ -15,7 +15,7 @@ public final class OrderBoard implements IOrderBoardObserver {
     private OrderBoard() {
         // The following code emulates slow initialization.
         try {
-            Thread.sleep(1000);
+            Thread.sleep(500);
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }

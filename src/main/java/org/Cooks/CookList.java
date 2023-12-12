@@ -32,11 +32,10 @@ public class CookList {
     }
 
     public static ICook findFirstFree() {
-        for(var cook : cooks) {
-            if(cook.isFree()) {
-                return cook;
+        for(int i = cooks.size()-1; i>=0;i--)
+            if(cooks.get(i).isFree()) {
+                return cooks.get(i);
             }
-        }
         return null;
     }
 
@@ -54,4 +53,5 @@ public class CookList {
     public void setCookingStrategy(ICookingStrategy cookingStrategy) {
         this.cookingStrategy = cookingStrategy;
     }
+    public ICookingStrategy getCookingStrategy(){return cookingStrategy;}
 }

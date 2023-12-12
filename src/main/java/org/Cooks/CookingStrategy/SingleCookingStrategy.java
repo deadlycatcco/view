@@ -1,11 +1,11 @@
 package org.Cooks.CookingStrategy;
 
 import org.Cooks.Cook;
+import org.order.Order;
+import org.order.OrderStatus;
 import org.menu_and_pizza.AbstractProduct;
 import org.menu_and_pizza.Pizza;
 import org.menu_and_pizza.PizzaCookingStage;
-import org.order.Order;
-import org.order.OrderStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,20 +31,16 @@ public class SingleCookingStrategy implements ICookingStrategy {
             for (var pizza : pizzas) {
                 PizzaCookingStage currentStage = pizza.whichStepToDo();
                 while (currentStage != null) {
-                    synchronized (this) {
-                        try {
-                            System.out.println(pizza.getName()+" is at " + currentStage+" by "+cook.getId());
-                            wait(1000);
-                            currentStage = pizza.getNextStage();
-                            //щось на юайці
-                        } catch (Exception ex) {
-                            System.out.println("Error");
-                            return;
-                        }
+                    System.out.println(pizza.getName()+" is at " + currentStage+" by "+cook.getId());
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
                     }
+                    currentStage = pizza.getNextStage();
+                    //щось на юайці
                 }
             }
-            order.changeStatus(OrderStatus.COMPLETED);
             cook.sendCompleteOrder();
             cook.setFree();
         }

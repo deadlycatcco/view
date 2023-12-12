@@ -5,6 +5,10 @@ import java.util.ArrayList;
 public class OrderList {
     private ArrayList<Order> orderQueue;
 
+    public OrderList() {
+        orderQueue=new ArrayList<>();
+    }
+
     public void addToList(Order order){
         orderQueue.add(order);
     }

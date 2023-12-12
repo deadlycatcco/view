@@ -19,6 +19,7 @@ public abstract class AbstractProduct {
     public String getName() {
         return name;
     }
+    public AbstractProduct(){}
 
     public AbstractProduct(String name, double price){
         this.name = name;

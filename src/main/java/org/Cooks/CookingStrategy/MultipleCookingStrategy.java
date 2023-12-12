@@ -1,10 +1,9 @@
 package org.Cooks.CookingStrategy;
 
 import org.Cooks.Cook;
-import org.Cooks.CookingHandler.BakeHandler;
-import org.Cooks.CookingHandler.MakeDoughHandler;
-import org.Cooks.CookingHandler.MakeSauceHandler;
-import org.Cooks.CookingHandler.PackagingHandler;
+import org.Cooks.CookingHandler.*;
+import org.menu_and_pizza.Pizza;
+import org.menu_and_pizza.PizzaCookingStage;
 import org.order.Order;
 import org.order.OrderStatus;
 
@@ -13,16 +12,37 @@ public class MultipleCookingStrategy implements ICookingStrategy {
         Order order = cook.getOrder();
         if(order.getStatus()!=OrderStatus.PREPARING) {
             order.changeStatus(OrderStatus.PREPARING);
-
-            BakeHandler bh = new BakeHandler();
-            MakeDoughHandler dh = new MakeDoughHandler();
-            MakeSauceHandler sh = new MakeSauceHandler();
-            PackagingHandler ph = new PackagingHandler();
-            bh.setCook(cook);
-//        sh.setNextHandler(th);
-//        th.setNextHandler(bh);
-//        bh.setNextHandler(ph);
         }
+        Pizza pizza = new Pizza();
+        for(var ab : order.getProducts()) {
+            if(ab instanceof Pizza) {
+                pizza = (Pizza) ab;
+                BaseHandler nextHandler = null;
+                if(pizza.whichStepToDo() == PizzaCookingStage.START) {
+                    nextHandler = new MakeDoughHandler();
+                }else if(pizza.whichStepToDo() == PizzaCookingStage.DOUGH) {
+                    nextHandler = new MakeSauceHandler();
+                }
+                else if(pizza.whichStepToDo() == PizzaCookingStage.SAUCE) {
+                    nextHandler = new PutToppingsHandler();
+                }
+                else if(pizza.whichStepToDo() == PizzaCookingStage.TOPPINGS) {
+                    nextHandler = new BakeHandler();
+                }else if(pizza.whichStepToDo() == PizzaCookingStage.BAKED) {
+                    nextHandler = new PackagingHandler();
+                }
+                else return;
+                nextHandler.setCook(cook);
+                nextHandler.prepare();
+                break;
+            }
+            else  {
+                cook.sendCompleteOrder();
+                cook.setFree();
+                return;
+            }
+        }
+
 
     }
 }

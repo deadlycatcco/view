@@ -9,6 +9,10 @@ import java.util.Optional;
 public class CustomerList {
     List<Customer> customerArrayList;
 
+    public CustomerList() {
+        customerArrayList=new ArrayList<>();
+    }
+
     public CustomerList(ArrayList<Customer> customerArrayList) {
         this.customerArrayList = customerArrayList;
     }
@@ -24,5 +28,11 @@ public class CustomerList {
     }
     public void deleteFromList(Customer customer){
         customerArrayList.remove(customer);
+    }
+    public int getCustomerAmount(){
+        return customerArrayList.size();
+    }
+    public List<Customer> getCustomers(){
+        return customerArrayList;
     }
 }

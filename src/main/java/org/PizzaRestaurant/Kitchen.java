@@ -1,10 +1,13 @@
 package org.PizzaRestaurant;
-
-import org.Cooks.CookList;
+import org.Cooks.Cook;
+import org.Cooks.CookingStrategy.ICookingStrategy;
+import org.Cooks.CookingStrategy.MultipleCookingStrategy;
 import org.Cooks.ICook;
+import org.Cooks.CookList;
 import org.order.Order;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class Kitchen {
@@ -20,27 +23,26 @@ public class Kitchen {
     public void assignOrder() {
         Thread thread1 = new Thread(() -> {
             while (true) {
-
-                synchronized (lock) {
-
-
+                synchronized (orderQueue) {
                    if (!orderQueue.isEmpty() && !cookList.isEmpty()) {
+                       try {
 
+                           Thread.sleep(500); // Зупинка на пів секунди (500 мілісекунд)
+                       } catch (InterruptedException e) {
+                           e.printStackTrace();
+                       }
                         ICook cook = null;
-                       if(cookList.findFirstFree()!=null){
-                            cook=cookList.findFirstFree();
+                       if(CookList.findFirstFree()!=null){
+                            cook=CookList.findFirstFree();
+                            if(cookList.getCookingStrategy() instanceof MultipleCookingStrategy && cook.getId() ==1)
+                                continue;
                             Order order = (Order) orderQueue.poll();
                             System.out.println("кук "+cook.getId()+" взяв ордер "+order.getId()+" "+order);
                             cook.addOrder(order);
                         }
                    }
                 }
-                try {
 
-                    Thread.sleep(500); // Зупинка на пів секунди (500 мілісекунд)
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
         });
         thread1.start();
@@ -69,6 +71,10 @@ public class Kitchen {
     }
     public Queue<Order> getOrderQueue() {
         return orderQueue;
+    }
+    public int getOrderCount(){
+        return orderQueue.size();
+
     }
 
     public void setOrderQueue(Queue<Order> orderQueue) {

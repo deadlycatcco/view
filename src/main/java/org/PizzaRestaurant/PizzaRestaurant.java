@@ -1,26 +1,38 @@
 package org.PizzaRestaurant;
-
-import org.Checkout.CheckoutList;
+import org.Checkout.PickUpPoint;
+import org.Cooks.CookList;
+import org.menu_and_pizza.Menu;
+import org.order.Order;
 import org.order.OrderBoard;
+import org.Checkout.CheckoutList;
 public class PizzaRestaurant {
-    private CheckoutList checkoutList;
     private Kitchen kitchen;
-    private int minPizzaTime;
-    private OrderBoard orderBoard;
+
+    private CookList cookList;
     private RestaurantSize restaurantSize;
-    public PizzaRestaurant(PizzaRestaurant pizzaRestaurant) {
+    private PickUpPoint pickUpPoint;
+    private CheckoutList checkoutList;
+
+    private OrderBoard orderBoard;
+    private Menu menu;
+    private int minPizzaTime;
+  /*  public PizzaRestaurant(PizzaRestaurant pizzaRestaurant) {
         this.checkoutList = pizzaRestaurant.getCheckoutList();
         this.kitchen = pizzaRestaurant.getKitchen();
         this.minPizzaTime = pizzaRestaurant.getMinPizzaTime();
         this.orderBoard = pizzaRestaurant.getOrderBoard();
         this.restaurantSize = pizzaRestaurant.getRestaurantSize();
-    }
-    public PizzaRestaurant(CheckoutList checkoutList, Kitchen kitchen, int minPizzaTime, OrderBoard orderBoard, RestaurantSize restaurantSize) {
-        this.checkoutList = checkoutList;
+    }*/
+    public PizzaRestaurant( Kitchen kitchen,CookList cookList, RestaurantSize restaurantSize,PickUpPoint pickUpPoint,
+                            CheckoutList checkoutList, OrderBoard orderBoard, Menu menu, int minPizzaTime) {
         this.kitchen = kitchen;
-        this.minPizzaTime = minPizzaTime;
-        this.orderBoard = orderBoard;
+        this.cookList=cookList;
         this.restaurantSize = restaurantSize;
+        this.pickUpPoint=pickUpPoint;
+        this.checkoutList = checkoutList;
+        this.orderBoard=orderBoard;
+        this.menu=menu;
+        this.minPizzaTime = minPizzaTime;
     }
 
     public CheckoutList getCheckoutList() {

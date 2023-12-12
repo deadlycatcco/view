@@ -22,6 +22,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javafx.util.Pair;
+import kotlin.Triple;
 import org.Controller;
 import org.Simulation.Simulation;
 import static java.lang.Thread.sleep;
@@ -61,15 +62,17 @@ public class  HelloApplication extends Application {
         // Show InputDialog to get K
         int k = -1;
         int c = -1;
+        String strategy = "Single Strategy";
 
         while (k < 1 || k > 5 || c < 1 || c > 5) {
-            Optional<Pair<Integer, Integer>> result = showInputDialog();
+            Optional<Triple<Integer, Integer, String>> result = showInputDialog();
 
             if (result.isPresent()) {
                 try {
-                    Pair<Integer, Integer> values = result.get();
-                    k = values.getKey();
-                    c = values.getValue();
+                    Triple<Integer, Integer, String> values = result.get();
+                    k = values.getFirst();
+                    c = values.getSecond();
+                    strategy = values.getThird();
 
                     if (k < 1 || k > 5 || c < 1 || c > 5) {
                         showAlert("Invalid Input", "K and C should be between 1 and 5");
@@ -88,7 +91,8 @@ public class  HelloApplication extends Application {
             setupPrimaryStage(primaryStage, k, c);
             controller.setAmountOfCheckout(k);
             // controller.setCValue(c);
-            System.out.println("Received K: " + k + ", C: " + c);
+            System.out.println("Received K: " + k + ", C: " + c + ". S="+strategy);
+            controller.setStrategy(strategy);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -525,22 +529,22 @@ public class  HelloApplication extends Application {
     }
 
 
-    private void moveCookToDough(CookModel cook) {
-        CookPoint doughTable = cookPoints.get(0);
-        Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cook, doughTable.getPositionX(),
-                doughTable.getPositionY() - 1));
-    }
+//    private void moveCookToDough(CookModel cook) {
+//        CookPoint doughTable = cookPoints.get(0);
+//        Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cook, doughTable.getPositionX(),
+//                doughTable.getPositionY() - 1));
+//    }
+//
+//    private void moveCookToSauce(CookModel cook) {
+//        CookPoint sauceTable = cookPoints.get(1);
+//        Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cook, sauceTable.getPositionX(),
+//                sauceTable.getPositionY() - 1));
+//    }
 
-    private void moveCookToSauce(CookModel cook) {
-        CookPoint sauceTable = cookPoints.get(1);
-        Platform.runLater(() -> movingHandler.moveCookModelTo(gridPane, cook, sauceTable.getPositionX(),
-                sauceTable.getPositionY() - 1));
-    }
-
-    private Optional<Pair<Integer, Integer>> showInputDialog() {
-        Dialog<Pair<Integer, Integer>> dialog = new Dialog<>();
-        dialog.setTitle("Input Dialog");
-        dialog.setHeaderText("Enter K and C:");
+    private Optional<Triple<Integer, Integer, String>> showInputDialog() {
+        Dialog<Triple<Integer, Integer, String>> dialog = new Dialog<>();
+        dialog.setTitle("Configurations");
+        dialog.setHeaderText("Enter Checkouts and Cooks:");
 
         // Set the icon (if you have one)
         // dialog.setGraphic(new ImageView(this.getClass().getResource("icon.png").toString()));
@@ -556,16 +560,23 @@ public class  HelloApplication extends Application {
         grid.setPadding(new Insets(20, 150, 10, 10));
 
         TextField kField = new TextField();
-        kField.setPromptText("K");
+        kField.setPromptText("Checkouts");
 
-        grid.add(new Label("K:"), 0, 0);
+        grid.add(new Label("Checkouts:"), 0, 0);
         grid.add(kField, 1, 0);
 
         TextField cField = new TextField();
-        cField.setPromptText("C");
+        cField.setPromptText("Cooks");
 
-        grid.add(new Label("C:"), 0, 1);
+        grid.add(new Label("Cooks:"), 0, 1);
         grid.add(cField, 1, 1);
+
+        ChoiceBox<String> strategyChoiceBox = new ChoiceBox<>();
+        strategyChoiceBox.getItems().addAll("Single Strategy", "Multiple Strategy");
+        strategyChoiceBox.setValue("Single Strategy");
+
+        grid.add(new Label("Strategy:"), 0, 2);
+        grid.add(strategyChoiceBox, 1, 2);
 
         // Enable/Disable login button depending on whether a K was entered
         Node enterButton = dialog.getDialogPane().lookupButton(enterButtonType);
@@ -590,9 +601,10 @@ public class  HelloApplication extends Application {
                 try {
                     int k = Integer.parseInt(kField.getText());
                     int c = Integer.parseInt(cField.getText());
-                    return new Pair<>(k, c);
+                    String strategy = strategyChoiceBox.getValue();
+                    return new Triple<>(k, c, strategy);
                 } catch (NumberFormatException e) {
-                    showAlert("Invalid Input", "Please enter valid numbers for K and C");
+                    showAlert("Invalid Input", "Please enter valid numbers for Checkouts and Cooks");
                 }
             }
             return null;

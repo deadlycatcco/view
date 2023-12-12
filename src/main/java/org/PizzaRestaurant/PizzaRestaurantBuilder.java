@@ -1,75 +1,107 @@
 package org.PizzaRestaurant;
 import org.Checkout.CheckoutList;
+import org.Checkout.PickUpPoint;
+import org.Cooks.CookList;
+import org.Customer.Customer;
+import org.menu_and_pizza.Menu;
 import org.order.OrderBoard;
 
 public class PizzaRestaurantBuilder implements IBuilder{
 
-    private CheckoutList checkoutList;
     private Kitchen kitchen;
-    private int minPizzaTime;
-    private OrderBoard orderBoard;
+
+    private CookList cookList;
     private RestaurantSize restaurantSize;
+    private PickUpPoint pickUpPoint;
+    private CheckoutList checkoutList;
 
-    public PizzaRestaurantBuilder(){
-        this.restaurantSize = new RestaurantSize(50, 50);
-    }
+    private OrderBoard orderBoard;
+    private Menu menu;
+    private int minPizzaTime;
 
-    public void setRoomSize(int n, int m) {
-        restaurantSize.setHeight(n);
-        restaurantSize.setWidth(m);
+
+    @Override
+    public void setKitchen(Kitchen kitchen) {
+        this.kitchen=kitchen;
     }
 
     @Override
-    public void setCheckoutsAmount(int n) {
-        //checkoutList = new CheckoutList(n);
+    public void setCooks(CookList cookList) {
+        this.cookList=cookList;
     }
+
+
+
+    public void setRoomSize(RestaurantSize restaurantSize) {
+        this.restaurantSize=restaurantSize;
+    }
+
+    @Override
+    public void setPickUpPoint(PickUpPoint pickUpPoint) {
+        this.pickUpPoint=pickUpPoint;
+
+    }
+    public void setCheckoutList(CheckoutList checkoutList) {
+        this.checkoutList = checkoutList;
+    }
+    public void setOrderBoard(OrderBoard orderBoard) {
+        this.orderBoard = orderBoard;
+    }
+
+    @Override
+    public void setMenu(Menu menu) {
+        this.menu=menu;
+
+    }
+
+    @Override
+    public void setMinPizzaTima(int n) {
+        minPizzaTime=n;
+    }
+
 
     @Override
     public PizzaRestaurant getResult() {
-        return new PizzaRestaurant(checkoutList, kitchen, minPizzaTime, orderBoard, restaurantSize);
+        return new PizzaRestaurant (kitchen, cookList,  restaurantSize, pickUpPoint, checkoutList,  orderBoard,  menu,  minPizzaTime);
     }
 
 
+
+public CookList getCookList(){
+        return cookList;
+}
 
     public CheckoutList getCheckoutList() {
         return checkoutList;
     }
 
-    public void setCheckoutList(CheckoutList checkoutList) {
-        this.checkoutList = checkoutList;
-    }
 
     public Kitchen getKitchen() {
         return kitchen;
     }
 
-    public void setKitchen(Kitchen kitchen) {
-        this.kitchen = kitchen;
-    }
+
+
+
+
 
     public int getMinPizzaTime() {
         return minPizzaTime;
     }
 
-    public void setMinPizzaTime(int minPizzaTime) {
-        this.minPizzaTime = minPizzaTime;
-    }
 
     public OrderBoard getOrderBoard() {
         return orderBoard;
     }
 
-    public void setOrderBoard(OrderBoard orderBoard) {
-        this.orderBoard = orderBoard;
-    }
 
     public RestaurantSize getRestaurantSize() {
         return restaurantSize;
     }
 
-    public void setRestaurantSize(RestaurantSize restaurantSize) {
-        this.restaurantSize = restaurantSize;
-    }
+
+
+
 
 
 }

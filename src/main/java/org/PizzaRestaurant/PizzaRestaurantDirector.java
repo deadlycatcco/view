@@ -22,7 +22,7 @@ public class PizzaRestaurantDirector {
         this.builder = builder;
     }
 */
-    public void construct(PizzaRestaurantBuilder pizzaRestaurantBuilder, int cooksCount, ICookingStrategy cookingStrategy, int checkoutCount) {
+    public void construct(PizzaRestaurantBuilder pizzaRestaurantBuilder, int cooksCount, ICookingStrategy cookingStrategy, int checkoutCount, int minPizzaTime) {
         pizzaRestaurantBuilder.setKitchen(new Kitchen());
 
         //куки
@@ -72,7 +72,7 @@ public class PizzaRestaurantDirector {
 
         pizzaRestaurantBuilder.setMenu(menu);
 
-        pizzaRestaurantBuilder.setMinPizzaTima(5);
+        pizzaRestaurantBuilder.setMinPizzaTima(minPizzaTime);
 
     }
 }

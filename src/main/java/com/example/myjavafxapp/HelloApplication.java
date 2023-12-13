@@ -49,11 +49,7 @@ public class  HelloApplication extends Application {
     List<CheckoutModel> checkoutModels;
     List<List<BaseModel>> baseModels;
     List<List<Integer>> checkoutList;
-    //private static int checkoutsAmt;
 
-    //    public static int getCheckoutsAmt() {
-//        return checkoutsAmt;
-//    }
     private int checkAmount = 0;
     private int cookAmount = 0;
 
@@ -62,17 +58,19 @@ public class  HelloApplication extends Application {
         // Show InputDialog to get K
         int k = -1;
         int c = -1;
+        int minTime = -1;
         String strategy = "Single Strategy";
 
-        while (k < 1 || k > 5 || c < 1 || c > 5) {
-            Optional<Triple<Integer, Integer, String>> result = showInputDialog();
+        while (k < 1 || k > 5 || c < 1 || c > 5 || minTime < 0) {
+            Optional<Configuration> result = showInputDialog();
 
             if (result.isPresent()) {
                 try {
-                    Triple<Integer, Integer, String> values = result.get();
-                    k = values.getFirst();
-                    c = values.getSecond();
-                    strategy = values.getThird();
+                    Configuration configuration = result.get();
+                    k = configuration.getCheckouts();
+                    c = configuration.getCooks();
+                    strategy = configuration.getStrategy();
+                    minTime = configuration.getMinTime();
 
                     if (k < 1 || k > 5 || c < 1 || c > 5) {
                         showAlert("Invalid Input", "K and C should be between 1 and 5");
@@ -91,8 +89,10 @@ public class  HelloApplication extends Application {
             setupPrimaryStage(primaryStage, k, c);
             controller.setAmountOfCheckout(k);
             // controller.setCValue(c);
-            System.out.println("Received K: " + k + ", C: " + c + ". S="+strategy);
+            System.out.println("Received K: " + k + ", C: " + c + ". S="+strategy + ", pizzaTime = " + minTime);
             controller.setStrategy(strategy);
+            controller.setMinPizzaTime(minTime);
+
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -541,8 +541,8 @@ public class  HelloApplication extends Application {
 //                sauceTable.getPositionY() - 1));
 //    }
 
-    private Optional<Triple<Integer, Integer, String>> showInputDialog() {
-        Dialog<Triple<Integer, Integer, String>> dialog = new Dialog<>();
+    private Optional<Configuration> showInputDialog() {
+        Dialog<Configuration> dialog = new Dialog<>();
         dialog.setTitle("Configurations");
         dialog.setHeaderText("Enter Checkouts and Cooks:");
 
@@ -571,12 +571,18 @@ public class  HelloApplication extends Application {
         grid.add(new Label("Cooks:"), 0, 1);
         grid.add(cField, 1, 1);
 
+        TextField minTimeField = new TextField();
+        minTimeField.setPromptText("MinTime");
+
+        grid.add(new Label("MinTime:"), 0, 2);
+        grid.add(minTimeField, 1, 2);
+
         ChoiceBox<String> strategyChoiceBox = new ChoiceBox<>();
         strategyChoiceBox.getItems().addAll("Single Strategy", "Multiple Strategy");
         strategyChoiceBox.setValue("Single Strategy");
 
-        grid.add(new Label("Strategy:"), 0, 2);
-        grid.add(strategyChoiceBox, 1, 2);
+        grid.add(new Label("Strategy:"), 0, 3);
+        grid.add(strategyChoiceBox, 1, 3);
 
         // Enable/Disable login button depending on whether a K was entered
         Node enterButton = dialog.getDialogPane().lookupButton(enterButtonType);
@@ -588,6 +594,11 @@ public class  HelloApplication extends Application {
         });
         cField.textProperty().addListener((observable, oldValue, newValue) -> {
             enterButton.setDisable(newValue.trim().isEmpty() || kField.getText().trim().isEmpty());
+        });
+
+        minTimeField.textProperty().addListener((observable, oldValue, newValue) -> {
+            enterButton.setDisable(newValue.trim().isEmpty() || kField.getText().trim().isEmpty() ||
+                    cField.getText().trim().isEmpty());
         });
 
         dialog.getDialogPane().setContent(grid);
@@ -602,9 +613,10 @@ public class  HelloApplication extends Application {
                     int k = Integer.parseInt(kField.getText());
                     int c = Integer.parseInt(cField.getText());
                     String strategy = strategyChoiceBox.getValue();
-                    return new Triple<>(k, c, strategy);
+                    int minTime = Integer.parseInt(minTimeField.getText());
+                    return new Configuration(k, c, strategy, minTime);
                 } catch (NumberFormatException e) {
-                    showAlert("Invalid Input", "Please enter valid numbers for Checkouts and Cooks");
+                    showAlert("Invalid Input", "Please enter valid numbers for Checkouts, Cooks, and MinTime");
                 }
             }
             return null;

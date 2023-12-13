@@ -36,6 +36,7 @@ public class Simulation {
     private PizzaRestaurant pizzaRestaurant;
     private static int amountOfCheckouts = 0;
     private static int amountOfCooks = 0;
+    private static int minPizzaTime = 0;
     private static String chosenStrategy = "";
     private static final Object lock2 = new Object();
     public PizzaRestaurant init() {
@@ -61,6 +62,7 @@ public class Simulation {
     public void setAmountOfCheckouts(int amtOfCheckouts){amountOfCheckouts = amtOfCheckouts;}
     public void setAmountOfCooks(int amtOfCooks){amountOfCooks = amtOfCooks;}
     public void setChosenStrategy(String strategy){chosenStrategy = strategy;}
+    public void setMinTime(int minTime){minPizzaTime = minTime;}
     public static void YULIIA_TEST_CODE(){
 
         /*System.out.println("Hello, i`m pizza restaurant");
@@ -184,7 +186,7 @@ public class Simulation {
         }
         PizzaRestaurantDirector director=new PizzaRestaurantDirector();
         PizzaRestaurantBuilder builder=new PizzaRestaurantBuilder();
-        director.construct(builder, amountOfCooks, cookingStrategy,amountOfCheckouts);
+        director.construct(builder, amountOfCooks, cookingStrategy,amountOfCheckouts, minPizzaTime);
         controller.createCooks();
         PizzaRestaurant pizzaRestaurant=builder.getResult();
 

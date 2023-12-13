@@ -1,5 +1,7 @@
 package org.order;
 
+import com.example.myjavafxapp.OrderBoardView;
+import javafx.application.Platform;
 import org.Customer.ICustomerObserver;
 
 import java.util.ArrayList;
@@ -9,7 +11,7 @@ public final class OrderBoard implements IOrderBoardObserver {
 
     private static OrderBoard orderBoard;
     public List<ICustomerObserver> customers;
-
+    private OrderBoardView orderBoardView;
 
 
     private OrderBoard() {
@@ -53,7 +55,10 @@ public final class OrderBoard implements IOrderBoardObserver {
             // Перевірка на null для id та status
             if (id != null && status != null) {
                 // Оновлення статусу ордера в ордербоард
-                System.out.println("OrderBoard: Ордер " + id + " змінив свій статус на " + status);
+                Platform.runLater(() -> {
+                    orderBoardView.textArea.appendText("Ордер " + id + " змінив свій статус на " + status+"\n");
+                    // System.out.println("OrderBoard: Ордер " + id + " змінив свій статус на " + status);
+                });
 
                 // Перевірка на завершення замовлення
                 if (status == OrderStatus.COMPLETED) {
@@ -90,6 +95,14 @@ public final class OrderBoard implements IOrderBoardObserver {
             e.printStackTrace();
         }
 
+    }
+
+    public OrderBoardView getOrderBoardView() {
+        return orderBoardView;
+    }
+
+    public void setOrderBoardView(OrderBoardView orderBoardView){
+        this.orderBoardView=orderBoardView;
     }
 
 }

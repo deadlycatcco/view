@@ -1,5 +1,6 @@
 package org.PizzaRestaurant;
 
+import com.example.myjavafxapp.OrderBoardView;
 import org.Checkout.Checkout;
 import org.Checkout.CheckoutList;
 import org.Checkout.PickUpPoint;
@@ -63,7 +64,10 @@ public class PizzaRestaurantDirector {
 
         //ордербоард, меню
         OrderBoard orderBoard=OrderBoard.getOrderBoard();
+        OrderBoardView orderBoardView=new OrderBoardView();
+        orderBoard.setOrderBoardView(orderBoardView);
         pizzaRestaurantBuilder.setOrderBoard(orderBoard);
+        orderBoardView.start();
         Menu menu = new Menu();
 
         pizzaRestaurantBuilder.setMenu(menu);

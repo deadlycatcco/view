@@ -204,7 +204,6 @@ public class Simulation {
                     System.out.println(customer);
                     customers.add(customer);
                     pizzaRestaurant.getOrderBoard().addCustomer(customer);
-                   // customerManager.sendCustomerToCheckout(customer);
                     int checkoutId = customerManager.sendCustomerToCheckout(customer);
                     System.out.println("CHECKOUT BEST " + checkoutId);
                     controller.setCustomerIdAndCheckout(customer.getId(), checkoutId);

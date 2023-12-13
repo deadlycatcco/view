@@ -57,8 +57,9 @@ public final class OrderBoard implements IOrderBoardObserver {
                 // Оновлення статусу ордера в ордербоард
                 Platform.runLater(() -> {
                     orderBoardView.textArea.appendText("Ордер " + id + " змінив свій статус на " + status+"\n");
-                    // System.out.println("OrderBoard: Ордер " + id + " змінив свій статус на " + status);
+
                 });
+                System.out.println("OrderBoard: Ордер " + id + " змінив свій статус на " + status);
 
                 // Перевірка на завершення замовлення
                 if (status == OrderStatus.COMPLETED) {

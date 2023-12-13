@@ -84,28 +84,22 @@ public class MovingHandler {
         }
 
 
-        TranslateTransition transition = new TranslateTransition(Duration.seconds(2), baseModel.getGifImageView());
-        transition.setToX(newTranslateX);
-        transition.setToY(newTranslateY);
-        transition.play();
 
         baseModel.setPositionX(targetRow);
         baseModel.setPositionY(targetCol);
 
-        transition.setOnFinished(event -> {
-            Pane oldCell = getCell(gridPane, currentX, currentY);
-            oldCell.getChildren().remove(baseModel.getGifImageView());
+        Pane oldCell = getCell(gridPane, currentX, currentY);
+        oldCell.getChildren().remove(baseModel.getGifImageView());
 
-            Pane newCell = getCell(gridPane, targetRow, targetCol);
-            newCell.getChildren().add(baseModel.getGifImageView());
+        Pane newCell = getCell(gridPane, targetRow, targetCol);
+        newCell.getChildren().add(baseModel.getGifImageView());
 
-            baseModel.getGifImageView().setTranslateX(0);
-            baseModel.getGifImageView().setTranslateY(0);
+        baseModel.getGifImageView().setTranslateX(0);
+        baseModel.getGifImageView().setTranslateY(0);
+        System.out.println("Thread " + Thread.currentThread().getName() + " finished moving baseModel to " +
+                targetRow + ", " + targetCol);
 
-            System.out.println("Thread " + Thread.currentThread().getName() + " finished moving baseModel to " +
-                    targetRow + ", " + targetCol);
 
-        });
 
     }
 

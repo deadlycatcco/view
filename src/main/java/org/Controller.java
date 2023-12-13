@@ -38,6 +38,10 @@ public class Controller {
         });
     }
 
+    public void deleteCustomer(int customerId, int checkoutId){
+        helloApplication.deleteCustomerFromView(customerId-1,checkoutId-1);
+    }
+
     public void setCustomerIdAndCheckout(int customerId, int checkoutId){
         helloApplication.CreateCustomer(customerId-1,checkoutId-1);
     }

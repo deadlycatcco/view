@@ -36,16 +36,16 @@ public class  HelloApplication extends Application {
     private static final String IMAGE_URL = "/Images/cafe.png";
     private static final int GRID_ROWS = 14;
     private static final int GRID_COLUMNS = 20;
-    private Controller controller = new Controller();
+    private final Controller controller = new Controller();
 
     private final Object monitor = new Object();
-    private List<CookPoint> cookPoints = new ArrayList<>();
+    private final List<CookPoint> cookPoints = new ArrayList<>();
 
     private GridPane gridPane;
-    private MovingHandler movingHandler = new MovingHandler(gridPane);
+    private final MovingHandler movingHandler = new MovingHandler(gridPane);
 
-    private double cellWidth = 40; // Adjust the size of each cell
-    private double cellHeight = 40; // Adjust the size of each cell
+    private final double cellWidth = 40; // Adjust the size of each cell
+    private final double cellHeight = 40; // Adjust the size of each cell
     List<CheckoutModel> checkoutModels;
     List<List<BaseModel>> baseModels;
     List<List<Integer>> checkoutList;
@@ -392,6 +392,74 @@ public class  HelloApplication extends Application {
 
 ////////////////////////////////////////////////////////////////////////////
 
+    public  void deleteCustomerFromView(int customerId, int checkoutId) {
+
+        Thread thread = new Thread(() -> {
+            synchronized (this) {
+                BaseModel customerToDelete;
+                try {
+                    customerToDelete = baseModels.get(checkoutId).get(customerId);
+                } catch (Exception e) {
+                    return;
+                }
+                if (customerToDelete == null) return;
+                int xPosition = customerToDelete.getPositionX();
+                int yPosition = customerToDelete.getPositionY();
+                synchronized (this) {
+                    checkoutList.get(checkoutId).remove(1);
+                    checkoutList.get(checkoutId).add(1);
+                }
+               // synchronized (this) {
+//                Pane cellToDeleteFrom = movingHandler.getCell(gridPane, xPosition, yPosition);
+//                Platform.runLater(() -> {
+//                    cellToDeleteFrom.getChildren().remove(customerToDelete.getGifImageView());
+//                });
+
+                //}
+                for (int i = 0; i < baseModels.get(checkoutId).size(); i++) {
+                    if (i == 0) {
+                        continue;
+                    }
+                    BaseModel baseModel = baseModels.get(checkoutId).get(i);
+                    Pane cell2 = movingHandler.getCell(gridPane, baseModel.getPositionX(), baseModel.getPositionY());
+//                    Platform.runLater(() -> {
+//                        if(cell2.getChildren() != null) {
+//                            cell2.getChildren().clear();
+//                        }
+//                    });
+
+
+                        baseModel.setPositionY(baseModel.getPositionY() - 1);
+
+//                    Pane cellToDelete = movingHandler.getCell(gridPane, baseModel.getPositionX(), 1);
+//                    Platform.runLater(() -> {
+//                        //if(cell.getChildren() != null) {
+//                        cellToDelete.getChildren().clear();
+//                    });
+
+                    Pane cell = movingHandler.getCell(gridPane, baseModel.getPositionX(), baseModel.getPositionY());
+                    if (cell != null) {
+                        Platform.runLater(() -> {
+
+                            cell.getChildren().clear();
+
+                            cell.getChildren().add(baseModel.getGifImageView());
+
+                        });
+                    }
+                }
+//                try {
+//                    sleep(1000);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+                //synchronized (monitor){
+            baseModels.get(checkoutId).remove(customerToDelete);
+            }
+        });
+        thread.start();
+    }
+
 
     public void moveToWaitZone(Integer customerId, int checkoutId) {
         Thread thread3 = new Thread(() -> {
@@ -418,7 +486,7 @@ public class  HelloApplication extends Application {
         try {
             thread3.join();
         } catch (Exception e) {
-            System.out.println(e.toString());
+            System.out.println(e);
         }
     }
 

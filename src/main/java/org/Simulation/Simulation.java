@@ -26,10 +26,7 @@ import org.order.OrderStatus;
 import org.order.generation.MultiplePizzaAndBeverageStrategy;
 
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 
 public class Simulation {
@@ -39,6 +36,8 @@ public class Simulation {
     private static int minPizzaTime = 0;
     private static String chosenStrategy = "";
     private static final Object lock2 = new Object();
+    private static  List<Customer> customers=new ArrayList<>();
+    private static HashMap<Integer, Integer> customerToCheckoutMap = new HashMap<Integer, Integer>();
     public PizzaRestaurant init() {
         PizzaRestaurantBuilder builder = new PizzaRestaurantBuilder();
     //    PizzaRestaurantDirector director = new PizzaRestaurantDirector(builder);
@@ -194,27 +193,55 @@ public class Simulation {
 
 
         CustomerGenerator customerGenerator = CustomerGenerator.getInstance();
-        List<Customer> customers=new ArrayList<>();
+       // List<Customer> customers=new ArrayList<>();
         CustomerManager customerManager=new CustomerManager(pizzaRestaurant.getCheckoutList());
         Thread CustomerGenerator = new Thread(()->{
             synchronized (lock2) {
                 while(true) {
-                if(pizzaRestaurant.getCheckoutList().getCheckouts().get(2).getCustomersCount()<=2) {
+                //if(pizzaRestaurant.getCheckoutList().getCheckouts().get(2).getCustomersCount()<=2) {
                     Customer customer = customerGenerator.generateCustomer();
                     System.out.println(customer);
                     customers.add(customer);
                     pizzaRestaurant.getOrderBoard().addCustomer(customer);
                     int checkoutId = customerManager.sendCustomerToCheckout(customer);
+                    customerToCheckoutMap.put(customer.getId(), checkoutId);
                     System.out.println("CHECKOUT BEST " + checkoutId);
                     controller.setCustomerIdAndCheckout(customer.getId(), checkoutId);
-                }
+                //}
                 try {
                     lock2.wait(500);
                 }catch (Exception ex){}
             }        }
         }) ;
-        CustomerGenerator.start();      //кастомер менеджер
+        //кастомер менеджер
+        CustomerGenerator.start();
+        Thread orderStatusChecker = new Thread(()-> {
+            int count = 0;
+            while(true) {
+                if(count == 0) {
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    count++;
+                }
 
+                for (Customer c: customers) {
+                    if(c.getOrder().getStatus().equals(OrderStatus.COMPLETED)) {
+
+                        controller.deleteCustomer(c.getId(), customerToCheckoutMap.get(c.getId()));
+                        customers.remove(c.getId());
+                    }
+                }
+                try {
+                    Thread.sleep(100);
+                }
+                catch(Exception ex){}
+
+            }
+        });
+            orderStatusChecker.start();
         pizzaRestaurant.getKitchen().assignOrder();
 
 

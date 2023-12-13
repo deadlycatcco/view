@@ -195,7 +195,6 @@ public class Simulation {
 
         CustomerGenerator customerGenerator = CustomerGenerator.getInstance();
         List<Customer> customers=new ArrayList<>();
-//        pizzaRestaurant.getOrderBoard().getOrderBoardView().start();
         CustomerManager customerManager=new CustomerManager(pizzaRestaurant.getCheckoutList());
         Thread CustomerGenerator = new Thread(()->{
             synchronized (lock2) {

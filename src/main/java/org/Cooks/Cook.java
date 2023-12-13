@@ -15,6 +15,7 @@ public class Cook implements ICook{
     private Order order;
     private ICookingStrategy strategy;
     private PickUpPoint pickUpPoint;
+    private  int cookingTime;
 
     public Cook(){
         this.isFree = true;
@@ -27,6 +28,13 @@ public class Cook implements ICook{
         this.order = order;
         this.strategy = cookingStrategy;
         this.pickUpPoint=pickUpPoint;
+    }
+    public void setCookingTime(int time) {
+        cookingTime = time;
+    }
+
+    public int getCookingTime() {
+        return cookingTime;
     }
 
     public void addOrder(Order order){

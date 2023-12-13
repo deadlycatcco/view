@@ -20,7 +20,7 @@ public class BakeHandler extends BaseHandler {
         }
         for(var pizza : pizzas) {
             try {
-                Thread.sleep(500);
+                Thread.sleep(currentCook.getCookingTime()/5);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }

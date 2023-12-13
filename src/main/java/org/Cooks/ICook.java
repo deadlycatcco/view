@@ -7,6 +7,8 @@ public interface ICook {
     public void addOrder(Order order);
     public Order getOrder();
     public ICook nextCook();
+    public void setCookingTime(int time);
+    public int getCookingTime();
     public void setStrategy(ICookingStrategy str);
     public void cookWithStrategy();
     public void sendCompleteOrder();

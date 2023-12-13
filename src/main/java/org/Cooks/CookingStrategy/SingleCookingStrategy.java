@@ -33,7 +33,7 @@ public class SingleCookingStrategy implements ICookingStrategy {
                 while (currentStage != null) {
                     System.out.println(pizza.getName()+" is at " + currentStage+" by "+cook.getId());
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(cook.getCookingTime()/5);
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }

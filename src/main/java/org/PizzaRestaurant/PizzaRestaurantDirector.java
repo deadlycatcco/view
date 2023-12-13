@@ -31,6 +31,7 @@ public class PizzaRestaurantDirector {
         for(int i=0;i<cooksCount;++i){
             ICook cook=new Cook();
             cook.setId(i+1);
+            cook.setCookingTime(minPizzaTime);
             cookList.addToList(cook);
         }
         pizzaRestaurantBuilder.getKitchen().setCookList(cookList);

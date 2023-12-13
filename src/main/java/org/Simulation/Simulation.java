@@ -195,16 +195,16 @@ public class Simulation {
 
         CustomerGenerator customerGenerator = CustomerGenerator.getInstance();
         List<Customer> customers=new ArrayList<>();
-//        pizzaRestaurant.getOrderBoard().getOrderBoardView().start();
         CustomerManager customerManager=new CustomerManager(pizzaRestaurant.getCheckoutList());
         Thread CustomerGenerator = new Thread(()->{
             synchronized (lock2) {
                 while(true) {
-                if(pizzaRestaurant.getCheckoutList().getCheckouts().get(2).getCustomersCount()<=2) {                Customer customer = customerGenerator.generateCustomer();
+                if(pizzaRestaurant.getCheckoutList().getCheckouts().get(2).getCustomersCount()<=2) {
+                    Customer customer = customerGenerator.generateCustomer();
                     System.out.println(customer);
                     customers.add(customer);
                     pizzaRestaurant.getOrderBoard().addCustomer(customer);
-                    customerManager.sendCustomerToCheckout(customer);
+                   // customerManager.sendCustomerToCheckout(customer);
                     int checkoutId = customerManager.sendCustomerToCheckout(customer);
                     System.out.println("CHECKOUT BEST " + checkoutId);
                     controller.setCustomerIdAndCheckout(customer.getId(), checkoutId);

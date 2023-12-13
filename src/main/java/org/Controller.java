@@ -46,6 +46,10 @@ public class Controller {
         simulation.setChosenStrategy(strategy);
     }
 
+    public void setMinPizzaTime(int minTime){
+        simulation.setMinTime(minTime);
+    }
+
     public void createCooks(){
        helloApplication.CreateCook();
     }
